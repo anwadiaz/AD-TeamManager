@@ -1,0 +1,8 @@
+{
+  "name": "Football Team Manager",
+  "description": "Professional team management app with real-time statistics, player tracking, and cloud storage for profiles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
