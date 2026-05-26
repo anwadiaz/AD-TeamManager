@@ -1,7 +1,10 @@
-import { X, Trophy, Timer, Award, RectangleHorizontal, User as UserIcon } from 'lucide-react';
+import { X, Trophy, Timer, Award, RectangleHorizontal, User as UserIcon, FileDown, Loader2 } from 'lucide-react';
 import type { Player } from '../types';
 import { formatDate } from '../lib/utils';
 import { motion } from 'motion/react';
+import { useRef, useState } from 'react';
+import jsPDF from 'jspdf';
+import { toPng } from 'html-to-image';
 
 interface Props {
   player: Player;
@@ -9,9 +12,55 @@ interface Props {
 }
 
 export default function PlayerDetail({ player, onClose }: Props) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportToPDF = async () => {
+    if (!contentRef.current) return;
+    setIsExporting(true);
+
+    // Wait a bit for state to propagate if needed (optional)
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    try {
+      const element = contentRef.current;
+      const width = element.offsetWidth;
+      const height = element.offsetHeight;
+
+      const dataUrl = await toPng(element, {
+        quality: 1.0,
+        pixelRatio: 4, // Higher definition
+        backgroundColor: '#0f172a',
+        width: width,
+        height: height,
+        filter: (node) => {
+          const exclusionClasses = ['export-exclude'];
+          if (node instanceof HTMLElement) {
+            return !exclusionClasses.some(cls => node.classList.contains(cls));
+          }
+          return true;
+        }
+      });
+
+      const pdf = new jsPDF({
+        orientation: width > height ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [width, height]
+      });
+
+      pdf.addImage(dataUrl, 'PNG', 0, 0, width, height);
+      pdf.save(`Ficha_${player.nombre}_${player.apellidos}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-slate-950/80 backdrop-blur-md">
       <motion.div 
+        ref={contentRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-brand-slate-900 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-brand-slate-800"
@@ -19,12 +68,23 @@ export default function PlayerDetail({ player, onClose }: Props) {
         {/* Header with Background Pattern */}
         <div className="relative h-32 bg-red-500 overflow-hidden">
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 bg-brand-slate-950/20 hover:bg-brand-slate-950/40 rounded-full text-white transition-all backdrop-blur-sm"
-          >
-            <X size={20} />
-          </button>
+          
+          <div className="absolute top-4 right-4 flex items-center gap-2 export-exclude">
+            <button 
+              onClick={exportToPDF}
+              disabled={isExporting}
+              className="p-2 bg-brand-slate-950/20 hover:bg-brand-slate-950/40 rounded-full text-white transition-all backdrop-blur-sm flex items-center gap-2 px-4 disabled:opacity-50"
+            >
+              {isExporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
+              <span className="text-[10px] font-black uppercase tracking-widest">{isExporting ? 'Exportando...' : 'PDF'}</span>
+            </button>
+            <button 
+              onClick={onClose}
+              className="p-2 bg-brand-slate-950/20 hover:bg-brand-slate-950/40 rounded-full text-white transition-all backdrop-blur-sm"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Profile Info */}
