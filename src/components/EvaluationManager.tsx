@@ -16,10 +16,33 @@ export default function EvaluationManager({ players, session }: Props) {
   const [loading, setLoading] = useState(false);
   const [evaluations, setEvaluations] = useState<(Evaluation & { jugadores: Player })[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [detalles, setDetalles] = useState<Record<string, number>>({});
+
+  const selectedPlayer = players.find(p => p.id === selectedPlayerId);
+
+  const criteriaByPosition: Record<string, string[]> = {
+    'Portero': ['Reflejos', 'Juego de Pies', 'Salidas', 'Blocaje', 'Comunicación', 'Penaltis', 'Posicionamiento', 'Agilidad', 'Saque de mano', '1 contra 1'],
+    'Defensa': ['Marcaje', 'Anticipación', 'Salida de Balón', 'Contundencia', 'Juego Aéreo', 'Velocidad', 'Reacción', 'Disciplina', 'Fuerza', 'Liderazgo'],
+    'Centrocampista': ['Visión', 'Pase Corto', 'Control', 'Recuperación', 'Pase Largo', 'Resistencia', 'Toma de Decisiones', 'Conducción', 'Golpeo Lejano', 'Equilibrio'],
+    'Delantero': ['Definición', 'Desmarque', 'Regate', 'Finalización', 'Potencia de Tiro', 'Agilidad', 'Cabeceo', 'Presión', 'Velocidad Punta', 'Olfato']
+  };
 
   useEffect(() => {
     fetchEvaluations();
   }, []);
+
+  useEffect(() => {
+    if (selectedPlayer) {
+      const criteria = criteriaByPosition[selectedPlayer.demarcacion] || [];
+      const newDetalles: Record<string, number> = {};
+      criteria.forEach(c => {
+        newDetalles[c] = 5;
+      });
+      setDetalles(newDetalles);
+    } else {
+      setDetalles({});
+    }
+  }, [selectedPlayerId]);
 
   const fetchEvaluations = async () => {
     setFetching(true);
@@ -39,13 +62,20 @@ export default function EvaluationManager({ players, session }: Props) {
     if (!selectedPlayerId || !session?.user?.id) return;
 
     setLoading(true);
+    
+    // Format JSON details within the comment field to avoid schema changes
+    const detailedComment = JSON.stringify({
+      texto: comentario,
+      detalles: detalles
+    });
+
     const { error } = await supabase
       .from('evaluaciones')
       .insert({
         jugador_id: selectedPlayerId,
         usuario_id: session.user.id,
         nota,
-        comentario,
+        comentario: detailedComment,
         fecha: new Date().toISOString().split('T')[0]
       });
 
@@ -53,9 +83,22 @@ export default function EvaluationManager({ players, session }: Props) {
       setComentario('');
       setSelectedPlayerId('');
       setNota(5);
+      setDetalles({});
       fetchEvaluations();
     }
     setLoading(false);
+  };
+
+  const parseComment = (comment: string) => {
+    try {
+      const parsed = JSON.parse(comment);
+      if (parsed && typeof parsed === 'object' && 'detalles' in parsed) {
+        return parsed as { texto: string, detalles: Record<string, number> };
+      }
+    } catch (e) {
+      // Not JSON, return as plain text
+    }
+    return { texto: comment, detalles: null };
   };
 
   return (
@@ -78,13 +121,38 @@ export default function EvaluationManager({ players, session }: Props) {
               >
                 <option value="">-- Elige un jugador --</option>
                 {players.map(p => (
-                  <option key={p.id} value={p.id}>{p.nombre} {p.apellidos}</option>
+                  <option key={p.id} value={p.id}>{p.nombre} {p.apellidos} ({p.demarcacion})</option>
                 ))}
               </select>
             </div>
 
+            {selectedPlayer && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-brand-slate-800/30 rounded-xl border border-brand-slate-800"
+              >
+                {Object.keys(detalles).map((key) => (
+                  <div key={key}>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="text-[9px] font-bold text-slate-500 uppercase">{key}</label>
+                      <span className="text-[10px] font-bold text-red-500">{detalles[key]}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      className="w-full accent-red-500/50 h-1 bg-brand-slate-800 rounded-lg appearance-none cursor-pointer"
+                      value={detalles[key]}
+                      onChange={(e) => setDetalles(prev => ({ ...prev, [key]: Number(e.target.value) }))}
+                    />
+                  </div>
+                ))}
+              </motion.div>
+            )}
+
             <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1.5 px-1">Calificación (1-10)</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1.5 px-1">Calificación Global (1-10)</label>
               <div className="flex items-center gap-4">
                 <input
                   type="range"
@@ -166,21 +234,51 @@ export default function EvaluationManager({ players, session }: Props) {
                         {ev.jugadores?.nombre} {ev.jugadores?.apellidos}
                       </h5>
                       <div className="flex items-center gap-2 text-[10px] text-slate-500 mt-0.5">
+                        <span className="bg-brand-slate-800 px-2 py-0.5 rounded border border-brand-slate-700 text-slate-400 capitalize">
+                          {ev.jugadores?.demarcacion}
+                        </span>
+                        <span>•</span>
                         <Calendar size={10} />
                         {new Date(ev.fecha).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
-                  <div className="w-10 h-10 flex items-center justify-center bg-red-500/10 text-red-500 rounded-xl font-black text-lg border border-red-500/20">
+                  <div className="w-10 h-10 flex items-center justify-center bg-red-500/10 text-red-500 rounded-xl font-black text-lg border border-red-500/20 shadow-inner">
                     {ev.nota}
                   </div>
                 </div>
 
-                {ev.comentario && (
-                  <p className="mt-4 text-sm text-slate-400 leading-relaxed italic border-l-2 border-red-500/30 pl-3">
-                    "{ev.comentario}"
-                  </p>
-                )}
+                {(() => {
+                  const { texto, detalles: evDetalles } = parseComment(ev.comentario);
+                  return (
+                    <div className="mt-4 space-y-3">
+                      {evDetalles && (
+                        <div className="grid grid-cols-2 gap-2">
+                          {Object.entries(evDetalles).map(([k, v]) => (
+                            <div key={k} className="bg-brand-slate-950/40 p-2 rounded-lg border border-brand-slate-800/50">
+                              <div className="flex justify-between items-center">
+                                <span className="text-[9px] text-slate-500 uppercase font-medium">{k}</span>
+                                <span className="text-[10px] font-bold text-slate-300">{v}</span>
+                              </div>
+                              <div className="w-full bg-brand-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                                <div 
+                                  className="h-full bg-red-500/40" 
+                                  style={{ width: `${(v as number) * 10}%` }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {texto && (
+                        <p className="text-sm text-slate-400 leading-relaxed italic border-l-2 border-red-500/30 pl-3">
+                          "{texto}"
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
               </motion.div>
             ))
           )}
