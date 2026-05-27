@@ -201,13 +201,13 @@ export default function App() {
               />
             </div>
             
-            {viewMode !== 'notifications' && (
+            {(viewMode === 'players' || viewMode === 'matches') && (
               <button
                 onClick={() => {
                   setEditingItem(null);
                   setIsFormOpen(true);
                 }}
-                className="bg-red-500 hover:bg-red-400 text-slate-950 font-bold px-4 sm:px-6 py-2.5 rounded-full text-sm transition-all shadow-lg shadow-red-500/20 active:scale-95"
+                className="bg-red-500 hover:bg-red-400 text-slate-950 font-bold px-3 py-1.5 rounded-full text-[10px] md:text-xs transition-all shadow-lg shadow-red-500/20 active:scale-95 whitespace-nowrap"
               >
                 + {viewMode === 'players' ? 'Nuevo Jugador' : 'Nuevo Partido'}
               </button>
@@ -249,7 +249,7 @@ export default function App() {
                     <select
                       value={filterPos}
                       onChange={(e) => setFilterPos(e.target.value)}
-                      className="bg-brand-slate-800 text-slate-400 text-[10px] md:text-xs px-2 md:px-4 py-1.5 md:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[100px] md:max-w-none"
+                      className="bg-brand-slate-800 text-slate-400 text-[9px] md:text-[10px] lg:text-xs px-1.5 md:px-2 lg:px-4 py-1 md:py-1.5 lg:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[85px] md:max-w-[100px] lg:max-w-none"
                     >
                       <option value="Todas">Posiciones</option>
                       <option value="Portero">Portero</option>
@@ -261,7 +261,7 @@ export default function App() {
                     <select
                       value={filterTalla}
                       onChange={(e) => setFilterTalla(e.target.value)}
-                      className="bg-brand-slate-800 text-slate-400 text-[10px] md:text-xs px-2 md:px-4 py-1.5 md:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[100px] md:max-w-none"
+                      className="bg-brand-slate-800 text-slate-400 text-[9px] md:text-[10px] lg:text-xs px-1.5 md:px-2 lg:px-4 py-1 md:py-1.5 lg:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[85px] md:max-w-[100px] lg:max-w-none"
                     >
                       <option value="Todas">Altura</option>
                       <option value="Bajos">Bajos (&lt; 175cm)</option>
