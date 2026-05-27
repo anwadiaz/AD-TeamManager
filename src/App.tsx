@@ -363,6 +363,12 @@ export default function App() {
         >
           <Star size={24} />
         </button>
+        <button 
+          onClick={() => supabase.auth.signOut()}
+          className="p-2 rounded-xl transition-all text-slate-500 active:text-red-500"
+        >
+          <LogOut size={24} />
+        </button>
       </nav>
     </div>
   );

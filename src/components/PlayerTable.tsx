@@ -62,7 +62,7 @@ export default function PlayerTable({ players, onEdit, onDelete, onView }: Props
               <td className="px-4 py-3 text-center font-mono text-sm text-red-500/80">{player.tarjetas_rojas || 0}</td>
               <td className="px-4 py-3 text-center font-mono text-sm text-blue-400">{player.minutos_jugados || 0}</td>
               <td className="px-4 py-3 text-right">
-                <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center justify-end gap-1 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                   <button onClick={() => onView(player)} className="p-1.5 text-slate-500 hover:text-white transition-colors">
                     <Eye size={14} />
                   </button>

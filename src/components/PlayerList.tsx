@@ -38,7 +38,7 @@ export default function PlayerList({ players, onEdit, onDelete, onView }: Props)
                 {player.dorsal || '--'}
               </span>
             </div>
-            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-4 right-4 flex gap-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
               <button 
                 onClick={() => onView(player)}
                 className="p-2 bg-brand-slate-950/80 backdrop-blur rounded-xl text-slate-300 hover:text-white shadow-sm transition-colors border border-brand-slate-800"
