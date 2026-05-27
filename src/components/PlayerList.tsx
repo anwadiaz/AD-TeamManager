@@ -41,24 +41,24 @@ export default function PlayerList({ players, onEdit, onDelete, onView }: Props)
             <div className="absolute top-4 right-4 flex gap-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
               <button 
                 onClick={() => onView(player)}
-                className="p-2 bg-brand-slate-950/80 backdrop-blur rounded-xl text-slate-300 hover:text-white shadow-sm transition-colors border border-brand-slate-800"
+                className="p-3 bg-brand-slate-950/90 backdrop-blur rounded-2xl text-slate-300 active:text-white shadow-sm transition-colors border border-brand-slate-800"
                 title="Ver Detalle"
               >
-                <Eye size={16} />
+                <Eye size={20} />
               </button>
               <button 
                 onClick={() => onEdit(player)}
-                className="p-2 bg-brand-slate-950/80 backdrop-blur rounded-xl text-slate-300 hover:text-red-400 shadow-sm transition-colors border border-brand-slate-800"
+                className="p-3 bg-brand-slate-950/90 backdrop-blur rounded-2xl text-slate-300 active:text-red-400 shadow-sm transition-colors border border-brand-slate-800"
                 title="Editar"
               >
-                <Edit2 size={16} />
+                <Edit2 size={20} />
               </button>
               <button 
                 onClick={() => onDelete(player.id)}
-                className="p-2 bg-brand-slate-950/80 backdrop-blur rounded-xl text-slate-300 hover:text-red-400 shadow-sm transition-colors border border-brand-slate-800"
+                className="p-3 bg-brand-slate-950/90 backdrop-blur rounded-2xl text-slate-300 active:text-red-400 shadow-sm transition-colors border border-brand-slate-800"
                 title="Eliminar"
               >
-                <Trash2 size={16} />
+                <Trash2 size={20} />
               </button>
             </div>
           </div>

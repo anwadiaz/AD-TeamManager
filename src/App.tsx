@@ -338,34 +338,38 @@ export default function App() {
       </AnimatePresence>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-brand-slate-900 border-t border-brand-slate-800 flex items-center justify-around px-4 z-40">
+      <nav className="lg:hidden fixed bottom-10 left-4 right-4 h-16 bg-brand-slate-900/90 backdrop-blur-xl border border-brand-slate-800 flex items-center justify-around px-4 z-40 rounded-2xl shadow-2xl safe-area-pb">
         <button 
           onClick={() => setViewMode('players')}
-          className={`p-2 rounded-xl transition-all ${viewMode === 'players' ? 'text-red-500' : 'text-slate-500'}`}
+          className={`relative p-3 rounded-xl transition-all ${viewMode === 'players' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
         >
           <Users size={24} />
+          {viewMode === 'players' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
         </button>
         <button 
           onClick={() => setViewMode('matches')}
-          className={`p-2 rounded-xl transition-all ${viewMode === 'matches' ? 'text-red-500' : 'text-slate-500'}`}
+          className={`relative p-3 rounded-xl transition-all ${viewMode === 'matches' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
         >
           <Trophy size={24} />
+          {viewMode === 'matches' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
         </button>
         <button 
           onClick={() => setViewMode('notifications')}
-          className={`p-2 rounded-xl transition-all ${viewMode === 'notifications' ? 'text-red-500' : 'text-slate-500'}`}
+          className={`relative p-3 rounded-xl transition-all ${viewMode === 'notifications' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
         >
           <Bell size={24} />
+          {viewMode === 'notifications' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
         </button>
         <button 
           onClick={() => setViewMode('evaluations')}
-          className={`p-2 rounded-xl transition-all ${viewMode === 'evaluations' ? 'text-red-500' : 'text-slate-500'}`}
+          className={`relative p-3 rounded-xl transition-all ${viewMode === 'evaluations' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
         >
           <Star size={24} />
+          {viewMode === 'evaluations' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
         </button>
         <button 
           onClick={() => supabase.auth.signOut()}
-          className="p-2 rounded-xl transition-all text-slate-500 active:text-red-500"
+          className="p-3 rounded-xl transition-all text-slate-500 active:text-red-500 active:scale-90"
         >
           <LogOut size={24} />
         </button>

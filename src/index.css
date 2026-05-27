@@ -21,6 +21,17 @@
   h1, h2, h3 {
     @apply font-display tracking-tight;
   }
+
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Improve touch targets on mobile */
+  @media (max-width: 1024px) {
+    button, [role="button"] {
+      @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+    }
+  }
 }
 
 .bento-card {
