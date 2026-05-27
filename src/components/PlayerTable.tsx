@@ -18,6 +18,8 @@ export default function PlayerTable({ players, onEdit, onDelete, onView }: Props
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Jugador</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Pos</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Talla</th>
+            <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">PJ</th>
+            <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">PT</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><Trophy size={12} className="inline mr-1" /> G</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><Award size={12} className="inline mr-1" /> A</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><RectangleHorizontal size={10} className="inline rotate-90 text-yellow-500" /></th>
@@ -60,6 +62,8 @@ export default function PlayerTable({ players, onEdit, onDelete, onView }: Props
               <td className="px-4 py-3 text-center text-xs font-mono text-slate-400">
                 {player.talla ? `${player.talla}cm` : '--'}
               </td>
+              <td className="px-4 py-3 text-center font-mono text-sm text-slate-400">{player.partidos_jugados || 0}</td>
+              <td className="px-4 py-3 text-center font-mono text-sm text-slate-400">{player.titularidades || 0}</td>
               <td className="px-4 py-3 text-center font-mono text-sm text-white font-bold">{player.goles || 0}</td>
               <td className="px-4 py-3 text-center font-mono text-sm text-slate-400">{player.asistencias || 0}</td>
               <td className="px-4 py-3 text-center font-mono text-sm text-yellow-500/80">{player.tarjetas_amarillas || 0}</td>

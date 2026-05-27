@@ -20,6 +20,8 @@ export interface Player {
   tarjetas_amarillas: number;
   tarjetas_rojas: number;
   minutos_jugados: number;
+  partidos_jugados: number;
+  titularidades: number;
   talla?: number;
 }
 
@@ -54,10 +56,12 @@ export interface PlayerFormData extends Omit<Partial<Player>, 'id' | 'created_at
   nombre: string;
   apellidos: string;
   apodo?: string;
-  dorsal: number | string;
+  dorsal?: number | string;
   fecha_nacimiento: string;
   demarcacion: Demarcacion;
   lateralidad: Lateralidad;
   equipo: string;
   talla?: number;
+  partidos_jugados: number;
+  titularidades: number;
 }

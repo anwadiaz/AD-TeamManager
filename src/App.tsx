@@ -8,7 +8,7 @@ import PlayerTable from './components/PlayerTable';
 import EvaluationManager from './components/EvaluationManager';
 import MatchList from './components/MatchList';
 import MatchForm from './components/MatchForm';
-import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star } from 'lucide-react';
+import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star, Upload } from 'lucide-react';
 import type { Player, Match, Evaluation } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserMenu } from './components/UserMenu';
@@ -230,15 +230,36 @@ export default function App() {
             </div>
             
             {(viewMode === 'players' || viewMode === 'matches') && (
-              <button
-                onClick={() => {
-                  setEditingItem(null);
-                  setIsFormOpen(true);
-                }}
-                className="bg-red-500 hover:bg-red-400 text-slate-950 font-bold px-3 py-1.5 rounded-full text-[10px] md:text-xs transition-all shadow-lg shadow-red-500/20 active:scale-95 whitespace-nowrap"
-              >
-                + {viewMode === 'players' ? 'Nuevo Jugador' : 'Nuevo Partido'}
-              </button>
+              <div className="flex items-center gap-2">
+                {viewMode === 'players' && players.length === 0 && (
+                  <button 
+                    onClick={async () => {
+                      const { bulkImportPlayers } = await import('./lib/bulkImport');
+                      if (confirm('¿Quieres importar toda la plantilla del At. Central B 24/25 con sus estadísticas?')) {
+                        try {
+                          await bulkImportPlayers();
+                          fetchPlayers();
+                        } catch (e: any) {
+                          alert('Error al importar: ' + e.message);
+                        }
+                      }
+                    }}
+                    className="flex bg-brand-slate-800 hover:bg-brand-slate-700 text-red-500 font-bold px-3 py-1.5 rounded-full text-[10px] md:text-xs transition-all active:scale-95 items-center gap-2 border border-brand-slate-700"
+                  >
+                    <Upload size={14} />
+                    Importar 24/25
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setEditingItem(null);
+                    setIsFormOpen(true);
+                  }}
+                  className="bg-red-500 hover:bg-red-400 text-slate-950 font-bold px-3 py-1.5 rounded-full text-[10px] md:text-xs transition-all shadow-lg shadow-red-500/20 active:scale-95 whitespace-nowrap"
+                >
+                  + {viewMode === 'players' ? 'Nuevo Jugador' : 'Nuevo Partido'}
+                </button>
+              </div>
             )}
           </div>
         </header>

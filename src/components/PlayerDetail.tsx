@@ -122,6 +122,8 @@ export default function PlayerDetail({ player, onClose }: Props) {
               </h3>
               
               <div className="grid grid-cols-2 gap-3">
+                <StatCard label="P. Jugados" value={player.partidos_jugados} icon={<Award size={14} />} color="blue" />
+                <StatCard label="Titular" value={player.titularidades} icon={<Award size={14} />} color="blue" />
                 <StatCard label="Goles" value={player.goles} icon={<Trophy size={14} />} color="red" />
                 <StatCard label="Asistencias" value={player.asistencias} icon={<Award size={14} />} color="blue" />
                 <StatCard label="Amarillas" value={player.tarjetas_amarillas} icon={<RectangleHorizontal size={14} className="rotate-90" />} color="yellow" />

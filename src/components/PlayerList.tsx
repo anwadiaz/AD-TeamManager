@@ -86,22 +86,30 @@ export default function PlayerList({ players, onEdit, onDelete, onView }: Props)
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-4 gap-2 text-center bg-brand-slate-950/40 p-2 rounded-xl border border-brand-slate-800">
+            <div className="mt-4 grid grid-cols-6 gap-1.5 text-center bg-brand-slate-950/40 p-2 rounded-xl border border-brand-slate-800">
               <div>
-                <div className="text-[9px] text-slate-500 font-bold uppercase">G</div>
-                <div className="text-xs font-bold text-white">{player.goles || 0}</div>
+                <div className="text-[8px] text-slate-500 font-bold uppercase">PJ</div>
+                <div className="text-[10px] font-bold text-white">{player.partidos_jugados || 0}</div>
               </div>
               <div>
-                <div className="text-[9px] text-slate-500 font-bold uppercase">A</div>
-                <div className="text-xs font-bold text-white">{player.asistencias || 0}</div>
+                <div className="text-[8px] text-slate-500 font-bold uppercase">PT</div>
+                <div className="text-[10px] font-bold text-white">{player.titularidades || 0}</div>
               </div>
               <div>
-                <div className="text-[9px] text-slate-500 font-bold uppercase">TA</div>
-                <div className="text-xs font-bold text-yellow-500">{player.tarjetas_amarillas || 0}</div>
+                <div className="text-[8px] text-slate-500 font-bold uppercase">G</div>
+                <div className="text-[10px] font-bold text-white">{player.goles || 0}</div>
               </div>
               <div>
-                <div className="text-[9px] text-slate-500 font-bold uppercase">TR</div>
-                <div className="text-xs font-bold text-red-500">{player.tarjetas_rojas || 0}</div>
+                <div className="text-[8px] text-slate-500 font-bold uppercase">A</div>
+                <div className="text-[10px] font-bold text-white">{player.asistencias || 0}</div>
+              </div>
+              <div>
+                <div className="text-[8px] text-slate-500 font-bold uppercase">TA</div>
+                <div className="text-[10px] font-bold text-yellow-500">{player.tarjetas_amarillas || 0}</div>
+              </div>
+              <div>
+                <div className="text-[8px] text-slate-500 font-bold uppercase">TR</div>
+                <div className="text-[10px] font-bold text-red-500">{player.tarjetas_rojas || 0}</div>
               </div>
             </div>
 

@@ -24,7 +24,9 @@ export default function PlayerForm({ onClose, onSave, initialData }: Props) {
       equipo: '',
       foto_jugador: '',
       observaciones: '',
-      talla: 175
+      talla: 175,
+      partidos_jugados: 0,
+      titularidades: 0
     }
   );
 
@@ -273,7 +275,25 @@ export default function PlayerForm({ onClose, onSave, initialData }: Props) {
             />
           </div>
 
-          <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 bg-brand-slate-950/40 rounded-2xl border border-brand-slate-800">
+          <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-7 gap-3 p-4 bg-brand-slate-950/40 rounded-2xl border border-brand-slate-800">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-500 uppercase">PJ</label>
+              <input
+                type="number"
+                className="w-full px-3 py-1.5 bg-brand-slate-800 border border-brand-slate-700 text-white rounded-lg outline-none text-sm"
+                value={formData.partidos_jugados || 0}
+                onChange={(e) => setFormData({ ...formData, partidos_jugados: Number(e.target.value) })}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-500 uppercase">PT</label>
+              <input
+                type="number"
+                className="w-full px-3 py-1.5 bg-brand-slate-800 border border-brand-slate-700 text-white rounded-lg outline-none text-sm"
+                value={formData.titularidades || 0}
+                onChange={(e) => setFormData({ ...formData, titularidades: Number(e.target.value) })}
+              />
+            </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold text-slate-500 uppercase">Goles</label>
               <input
