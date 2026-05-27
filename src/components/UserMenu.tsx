@@ -48,46 +48,61 @@ export function UserMenu({ email, isMobile = false, onNavigate, currentView }: U
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: isMobile ? -10 : 10, scale: 0.95 }}
+            initial={{ opacity: 0, y: isMobile ? 10 : -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: isMobile ? -10 : 10, scale: 0.95 }}
-            className={`absolute z-50 w-48 bg-brand-slate-900 border border-brand-slate-800 rounded-xl shadow-2xl p-1 overflow-hidden
-              ${isMobile ? 'bottom-full mb-4 left-1/2 -translate-x-1/2' : 'bottom-full mb-4 left-0'}`}
+            exit={{ opacity: 0, y: isMobile ? 10 : -10, scale: 0.95 }}
+            className={`absolute z-50 w-64 bg-brand-slate-900 border border-brand-slate-800 rounded-2xl shadow-2xl p-2 
+              ${isMobile ? 'bottom-full mb-3 left-0' : 'top-0 left-full ml-4'}`}
           >
-            <div className="px-3 py-2 border-b border-brand-slate-800 mb-1">
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Sesión iniciada</p>
-              <p className="text-xs text-slate-300 truncate">{email}</p>
+            <div className="px-4 py-3 border-b border-brand-slate-800/50 mb-2">
+              <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-black">Cuenta Activa</p>
+              <p className="text-sm text-white font-medium truncate">{email}</p>
             </div>
             
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                onNavigate('profile');
-              }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:bg-brand-slate-800 hover:text-white rounded-lg transition-colors group"
-            >
-              <User size={16} className="text-slate-500 group-hover:text-red-500" />
-              <span>Mi Perfil</span>
-            </button>
-            
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                onNavigate('settings');
-              }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:bg-brand-slate-800 hover:text-white rounded-lg transition-colors group"
-            >
-              <Settings size={16} className="text-slate-500 group-hover:text-red-500" />
-              <span>Ajustes</span>
-            </button>
+            <div className="space-y-1">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate('profile');
+                  setIsOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-slate-300 hover:bg-brand-slate-800 hover:text-white rounded-xl transition-all group"
+              >
+                <div className="w-8 h-8 rounded-lg bg-brand-slate-800 flex items-center justify-center group-hover:bg-red-500/10 transition-colors">
+                  <User size={18} className="text-slate-500 group-hover:text-red-500" />
+                </div>
+                <span className="font-semibold">Mi Perfil</span>
+              </button>
+              
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate('settings');
+                  setIsOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-slate-300 hover:bg-brand-slate-800 hover:text-white rounded-xl transition-all group"
+              >
+                <div className="w-8 h-8 rounded-lg bg-brand-slate-800 flex items-center justify-center group-hover:bg-red-500/10 transition-colors">
+                  <Settings size={18} className="text-slate-500 group-hover:text-red-500" />
+                </div>
+                <span className="font-semibold">Ajustes</span>
+              </button>
 
-            <button
-              onClick={handleSignOut}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-colors group mt-1"
-            >
-              <LogOut size={16} className="text-red-500" />
-              <span>Cerrar Sesión</span>
-            </button>
+              <div className="h-px bg-brand-slate-800 my-2 mx-2" />
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSignOut();
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-all group"
+              >
+                <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                  <LogOut size={18} className="text-red-500" />
+                </div>
+                <span className="font-semibold">Cerrar Sesión</span>
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

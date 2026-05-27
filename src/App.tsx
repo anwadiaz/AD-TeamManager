@@ -249,7 +249,7 @@ export default function App() {
                     <select
                       value={filterPos}
                       onChange={(e) => setFilterPos(e.target.value)}
-                      className="bg-brand-slate-800 text-slate-400 text-xs px-4 py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500"
+                      className="bg-brand-slate-800 text-slate-400 text-[10px] md:text-xs px-2 md:px-4 py-1.5 md:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[100px] md:max-w-none"
                     >
                       <option value="Todas">Posiciones</option>
                       <option value="Portero">Portero</option>
@@ -261,9 +261,9 @@ export default function App() {
                     <select
                       value={filterTalla}
                       onChange={(e) => setFilterTalla(e.target.value)}
-                      className="bg-brand-slate-800 text-slate-400 text-xs px-4 py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500"
+                      className="bg-brand-slate-800 text-slate-400 text-[10px] md:text-xs px-2 md:px-4 py-1.5 md:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[100px] md:max-w-none"
                     >
-                      <option value="Todas">Altura (Cualquiera)</option>
+                      <option value="Todas">Altura</option>
                       <option value="Bajos">Bajos (&lt; 175cm)</option>
                       <option value="Medios">Medios (175-185cm)</option>
                       <option value="Altos">Altos (&gt; 185cm)</option>
