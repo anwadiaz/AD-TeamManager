@@ -8,9 +8,10 @@ import PlayerTable from './components/PlayerTable';
 import EvaluationManager from './components/EvaluationManager';
 import MatchList from './components/MatchList';
 import MatchForm from './components/MatchForm';
-import { Plus, Users, LogOut, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star } from 'lucide-react';
+import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star } from 'lucide-react';
 import type { Player, Match, Evaluation } from './types';
 import { motion, AnimatePresence } from 'motion/react';
+import { UserMenu } from './components/UserMenu';
 
 import { APP_CONFIG } from './lib/config';
 
@@ -174,14 +175,8 @@ export default function App() {
           </div>
         </div>
 
-        <div className="mt-auto flex flex-col gap-4">
-          <button
-            onClick={() => supabase.auth.signOut()}
-            className="p-3 text-slate-500 hover:text-red-500 transition-all"
-            title="Cerrar Sesión"
-          >
-            <LogOut size={24} />
-          </button>
+        <div className="mt-auto pb-4">
+          <UserMenu email={session?.user?.email} />
         </div>
       </nav>
 
@@ -354,7 +349,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-10 left-4 right-4 h-16 bg-brand-slate-900/90 backdrop-blur-xl border border-brand-slate-800 flex items-center justify-center gap-2 px-4 z-40 rounded-2xl shadow-2xl safe-area-pb">
+      <nav className="lg:hidden fixed bottom-10 left-4 right-4 h-16 bg-brand-slate-900/95 backdrop-blur-2xl border border-brand-slate-800 flex items-center justify-between px-6 z-40 rounded-2xl shadow-2xl safe-area-pb">
         <button 
           onClick={() => setViewMode('players')}
           className={`relative p-3 rounded-xl transition-all ${viewMode === 'players' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
@@ -383,12 +378,7 @@ export default function App() {
           <Star size={24} />
           {viewMode === 'evaluations' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
         </button>
-        <button 
-          onClick={() => supabase.auth.signOut()}
-          className="p-3 rounded-xl transition-all text-slate-500 active:text-red-500 active:scale-90"
-        >
-          <LogOut size={24} />
-        </button>
+        <UserMenu email={session?.user?.email} isMobile />
       </nav>
     </div>
   );
