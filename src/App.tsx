@@ -232,7 +232,7 @@ export default function App() {
 
                 {viewMode === 'players' && (
                   <div className="flex items-center gap-2">
-                    <div className="flex bg-brand-slate-800 p-1 rounded-lg border border-brand-slate-700 mr-2">
+                    <div className="hidden sm:flex bg-brand-slate-800 p-1 rounded-lg border border-brand-slate-700 mr-1 md:mr-2">
                       <button 
                         onClick={() => setPlayoutMode('grid')}
                         className={`p-1.5 rounded-md transition-all ${playoutMode === 'grid' ? 'bg-red-500 text-slate-950' : 'text-slate-500 hover:text-slate-300'}`}
@@ -246,28 +246,31 @@ export default function App() {
                         <List size={14} />
                       </button>
                     </div>
-                    <select
-                      value={filterPos}
-                      onChange={(e) => setFilterPos(e.target.value)}
-                      className="bg-brand-slate-800 text-slate-400 text-[9px] md:text-[10px] lg:text-xs px-1.5 md:px-2 lg:px-4 py-1 md:py-1.5 lg:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[85px] md:max-w-[100px] lg:max-w-none"
-                    >
-                      <option value="Todas">Posiciones</option>
-                      <option value="Portero">Portero</option>
-                      <option value="Defensa">Defensa</option>
-                      <option value="Centrocampista">Centrocampista</option>
-                      <option value="Delantero">Delantero</option>
-                    </select>
+                    
+                    <div className="flex flex-col md:flex-row gap-1 md:gap-2">
+                      <select
+                        value={filterPos}
+                        onChange={(e) => setFilterPos(e.target.value)}
+                        className="bg-brand-slate-800 text-slate-400 text-[9px] md:text-[10px] lg:text-xs px-1.5 md:px-2 lg:px-4 py-1 md:py-1.5 lg:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[85px] md:max-w-[100px] lg:max-w-none"
+                      >
+                        <option value="Todas">Posiciones</option>
+                        <option value="Portero">Portero</option>
+                        <option value="Defensa">Defensa</option>
+                        <option value="Centrocampista">Centrocampista</option>
+                        <option value="Delantero">Delantero</option>
+                      </select>
 
-                    <select
-                      value={filterTalla}
-                      onChange={(e) => setFilterTalla(e.target.value)}
-                      className="bg-brand-slate-800 text-slate-400 text-[9px] md:text-[10px] lg:text-xs px-1.5 md:px-2 lg:px-4 py-1 md:py-1.5 lg:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[85px] md:max-w-[100px] lg:max-w-none"
-                    >
-                      <option value="Todas">Altura</option>
-                      <option value="Bajos">Bajos (&lt; 175cm)</option>
-                      <option value="Medios">Medios (175-185cm)</option>
-                      <option value="Altos">Altos (&gt; 185cm)</option>
-                    </select>
+                      <select
+                        value={filterTalla}
+                        onChange={(e) => setFilterTalla(e.target.value)}
+                        className="bg-brand-slate-800 text-slate-400 text-[9px] md:text-[10px] lg:text-xs px-1.5 md:px-2 lg:px-4 py-1 md:py-1.5 lg:py-2 rounded-lg border border-brand-slate-700 outline-none focus:border-red-500 max-w-[85px] md:max-w-[100px] lg:max-w-none"
+                      >
+                        <option value="Todas">Altura</option>
+                        <option value="Bajos">Bajos (&lt; 175cm)</option>
+                        <option value="Medios">Medios (175-185cm)</option>
+                        <option value="Altos">Altos (&gt; 185cm)</option>
+                      </select>
+                    </div>
                   </div>
                 )}
               </div>

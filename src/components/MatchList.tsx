@@ -25,18 +25,18 @@ export default function MatchList({ matches, onEdit, onDelete }: Props) {
               <Calendar size={14} />
               <span className="text-xs font-mono">{formatDate(match.fecha)}</span>
             </div>
-            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <button 
                 onClick={() => onEdit(match)}
-                className="p-1.5 bg-brand-slate-950 rounded-lg text-slate-400 hover:text-red-400 border border-brand-slate-800"
+                className="p-1 px-1.5 bg-brand-slate-950 rounded-lg text-slate-500 hover:text-red-400 border border-brand-slate-800"
               >
-                <Edit2 size={14} />
+                <Edit2 size={12} />
               </button>
               <button 
                 onClick={() => onDelete(match.id)}
-                className="p-1.5 bg-brand-slate-950 rounded-lg text-slate-400 hover:text-red-400 border border-brand-slate-800"
+                className="p-1 px-1.5 bg-brand-slate-950 rounded-lg text-slate-500 hover:text-red-400 border border-brand-slate-800"
               >
-                <Trash2 size={14} />
+                <Trash2 size={12} />
               </button>
             </div>
           </div>
