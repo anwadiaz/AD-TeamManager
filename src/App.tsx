@@ -15,7 +15,7 @@ import { UserMenu } from './components/UserMenu';
 
 import { APP_CONFIG } from './lib/config';
 
-type ViewMode = 'players' | 'matches' | 'notifications' | 'evaluations';
+type ViewMode = 'players' | 'matches' | 'notifications' | 'evaluations' | 'profile' | 'settings';
 type PlayoutMode = 'grid' | 'table';
 
 export default function App() {
@@ -139,6 +139,8 @@ export default function App() {
     <div className="min-h-screen bg-brand-slate-950 flex p-4 gap-4 overflow-hidden">
       {/* Navigation Sidebar */}
       <nav className="w-20 bento-card flex flex-col items-center py-8 gap-8 shrink-0 hidden lg:flex">
+        <UserMenu email={session?.user?.email} onNavigate={setViewMode} currentView={viewMode} />
+
         <div 
           onClick={() => setViewMode('players')}
           className={`w-12 h-12 rounded-2xl flex items-center justify-center cursor-pointer transition-all ${
@@ -173,10 +175,6 @@ export default function App() {
           >
             <Star size={24} />
           </div>
-        </div>
-
-        <div className="mt-auto pb-4">
-          <UserMenu email={session?.user?.email} />
         </div>
       </nav>
 
@@ -224,7 +222,11 @@ export default function App() {
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h2 className="text-lg font-bold text-white uppercase tracking-wide">
-                    {viewMode === 'players' ? 'Gestión de Jugadores' : 'Registro de Resultados'}
+                    {viewMode === 'players' ? 'Gestión de Jugadores' : 
+                     viewMode === 'matches' ? 'Registro de Resultados' :
+                     viewMode === 'notifications' ? 'Centro de Avisos' :
+                     viewMode === 'evaluations' ? 'Sistema de Evaluación' :
+                     viewMode === 'profile' ? 'Configuración de Perfil' : 'Ajustes del Sistema'}
                   </h2>
                 </div>
 
@@ -306,6 +308,8 @@ export default function App() {
                   )}
                   {viewMode === 'notifications' && <NotificationCenter />}
                   {viewMode === 'evaluations' && <EvaluationManager players={players} session={session} />}
+                  {viewMode === 'profile' && <ProfileView session={session} />}
+                  {viewMode === 'settings' && <SettingsView />}
                 </>
               )}
             </section>
@@ -350,6 +354,7 @@ export default function App() {
 
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-10 left-4 right-4 h-16 bg-brand-slate-900/95 backdrop-blur-2xl border border-brand-slate-800 flex items-center justify-between px-6 z-40 rounded-2xl shadow-2xl safe-area-pb">
+        <UserMenu email={session?.user?.email} isMobile onNavigate={setViewMode} currentView={viewMode} />
         <button 
           onClick={() => setViewMode('players')}
           className={`relative p-3 rounded-xl transition-all ${viewMode === 'players' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
@@ -378,8 +383,66 @@ export default function App() {
           <Star size={24} />
           {viewMode === 'evaluations' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
         </button>
-        <UserMenu email={session?.user?.email} isMobile />
       </nav>
+    </div>
+  );
+}
+
+function ProfileView({ session }: { session: any }) {
+  return (
+    <div className="bg-brand-slate-950 p-6 rounded-2xl border border-brand-slate-800">
+      <div className="flex items-center gap-6 mb-8">
+        <div className="w-20 h-20 bg-brand-slate-800 rounded-full flex items-center justify-center text-2xl font-bold text-red-500 border-2 border-brand-slate-700">
+          {session?.user?.email?.substring(0, 2).toUpperCase()}
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-white leading-none mb-2">{session?.user?.email?.split('@')[0]}</h3>
+          <p className="text-slate-500 text-sm">{session?.user?.email}</p>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="p-4 bg-brand-slate-900 rounded-xl border border-brand-slate-800">
+          <p className="text-[10px] text-slate-500 uppercase font-black mb-1">Rol de Usuario</p>
+          <p className="text-white font-bold">Administrador del Equipo</p>
+        </div>
+        <div className="p-4 bg-brand-slate-900 rounded-xl border border-brand-slate-800">
+          <p className="text-[10px] text-slate-500 uppercase font-black mb-1">ID de Sesión</p>
+          <p className="text-slate-500 font-mono text-xs truncate">{session?.user?.id}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsView() {
+  return (
+    <div className="space-y-6">
+      <div className="bg-brand-slate-950 p-6 rounded-2xl border border-brand-slate-800">
+        <h3 className="text-lg font-bold text-white mb-6 uppercase tracking-tighter flex items-center gap-2">
+          <Settings className="text-red-500" size={20} /> Personalización
+        </h3>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-brand-slate-900 rounded-xl">
+            <div>
+              <p className="text-sm text-white font-bold">Notificaciones Push</p>
+              <p className="text-[10px] text-slate-500">Recibir alertas de nuevos partidos</p>
+            </div>
+            <div className="w-10 h-5 bg-red-500 rounded-full relative">
+              <div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+            </div>
+          </div>
+          <div className="flex items-center justify-between p-4 bg-brand-slate-900 rounded-xl">
+            <div>
+              <p className="text-sm text-white font-bold">Modo Oscuro</p>
+              <p className="text-[10px] text-slate-500">Interfaz siempre oscura</p>
+            </div>
+            <div className="w-10 h-5 bg-red-500 rounded-full relative">
+              <div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

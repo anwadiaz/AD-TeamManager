@@ -6,11 +6,15 @@ import { motion, AnimatePresence } from 'motion/react';
 interface UserMenuProps {
   email?: string;
   isMobile?: boolean;
+  onNavigate: (view: 'profile' | 'settings') => void;
+  currentView?: string;
 }
 
-export function UserMenu({ email, isMobile = false }: UserMenuProps) {
+export function UserMenu({ email, isMobile = false, onNavigate, currentView }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const isActive = currentView === 'profile' || currentView === 'settings';
 
   const initials = email 
     ? email.split('@')[0].substring(0, 2).toUpperCase() 
@@ -34,8 +38,9 @@ export function UserMenu({ email, isMobile = false }: UserMenuProps) {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-center rounded-full bg-brand-slate-800 border border-brand-slate-700 font-bold transition-all active:scale-95 shadow-lg
-          ${isMobile ? 'w-10 h-10 text-xs text-red-500' : 'w-10 h-10 text-sm text-red-500 hover:border-red-500/50'}`}
+        className={`flex items-center justify-center rounded-full font-bold transition-all active:scale-95 shadow-lg border-2
+          ${isActive ? 'bg-red-500 text-slate-950 border-red-400' : 'bg-brand-slate-800 text-red-500 border-brand-slate-700 hover:border-red-500/30'}
+          ${isMobile ? 'w-10 h-10 text-[10px]' : 'w-12 h-12 text-sm'}`}
       >
         {initials}
       </button>
@@ -57,7 +62,7 @@ export function UserMenu({ email, isMobile = false }: UserMenuProps) {
             <button
               onClick={() => {
                 setIsOpen(false);
-                // Future: setViewMode('profile')
+                onNavigate('profile');
               }}
               className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:bg-brand-slate-800 hover:text-white rounded-lg transition-colors group"
             >
@@ -68,6 +73,7 @@ export function UserMenu({ email, isMobile = false }: UserMenuProps) {
             <button
               onClick={() => {
                 setIsOpen(false);
+                onNavigate('settings');
               }}
               className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:bg-brand-slate-800 hover:text-white rounded-lg transition-colors group"
             >
