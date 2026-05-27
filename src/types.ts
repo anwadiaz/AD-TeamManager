@@ -5,6 +5,7 @@ export interface Player {
   id: string;
   nombre: string;
   apellidos: string;
+  apodo?: string;
   dorsal: number;
   fecha_nacimiento: string;
   demarcacion: Demarcacion;
@@ -52,6 +53,7 @@ export interface Lineup {
 export interface PlayerFormData extends Omit<Partial<Player>, 'id' | 'created_at' | 'dorsal'> {
   nombre: string;
   apellidos: string;
+  apodo?: string;
   dorsal: number | string;
   fecha_nacimiento: string;
   demarcacion: Demarcacion;

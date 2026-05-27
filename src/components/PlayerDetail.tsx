@@ -102,9 +102,11 @@ export default function PlayerDetail({ player, onClose }: Props) {
             <div className="flex-1 pb-2 text-center sm:text-left">
               <div className="flex items-center justify-center sm:justify-start gap-3 mb-1">
                 <span className="text-4xl font-black text-white">{player.dorsal || '--'}</span>
-                <h2 className="text-3xl font-display font-bold text-white uppercase tracking-tight">
-                  {player.nombre} {player.apellidos}
-                </h2>
+                <div>
+                  <h2 className="text-3xl font-display font-bold text-white uppercase tracking-tight">
+                    {player.apodo || `${player.nombre} ${player.apellidos}`}
+                  </h2>
+                </div>
               </div>
               <p className="text-red-400 font-bold uppercase tracking-widest text-xs flex items-center justify-center sm:justify-start gap-2">
                 {player.demarcacion} <span className="text-slate-700">•</span> {player.equipo || 'Sin Equipo'}
@@ -144,6 +146,7 @@ export default function PlayerDetail({ player, onClose }: Props) {
               </h3>
               
               <div className="bg-brand-slate-950 rounded-2xl border border-brand-slate-800 divide-y divide-brand-slate-800">
+                <InfoRow label="Nombre Real" value={`${player.nombre} ${player.apellidos}`} />
                 <InfoRow label="Lateralidad" value={player.lateralidad} />
                 <InfoRow label="Talla" value={player.talla ? `${player.talla} cm` : '--'} />
                 <InfoRow label="Nacimiento" value={formatDate(player.fecha_nacimiento)} />

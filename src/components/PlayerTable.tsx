@@ -43,7 +43,11 @@ export default function PlayerTable({ players, onEdit, onDelete, onView }: Props
                     ) : player.dorsal || '--'}
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-white leading-none">{player.nombre} {player.apellidos}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-bold text-white leading-none">
+                        {player.apodo || `${player.nombre} ${player.apellidos}`}
+                      </div>
+                    </div>
                     <div className="text-[10px] text-slate-500 uppercase mt-1">Dorsal {player.dorsal}</div>
                   </div>
                 </div>

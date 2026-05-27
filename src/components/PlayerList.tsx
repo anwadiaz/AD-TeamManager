@@ -66,10 +66,12 @@ export default function PlayerList({ players, onEdit, onDelete, onView }: Props)
           <div className="p-5">
             <div className="mb-4">
               <h3 className="text-xl font-display font-bold text-white truncate">
-                {player.nombre} {player.apellidos}
+                {player.apodo || `${player.nombre} ${player.apellidos}`}
               </h3>
-              <p className="text-sm font-medium text-red-500 flex items-center gap-1">
-                {player.demarcacion} • {player.equipo || 'Sin equipo'}
+              <p className="text-sm font-medium flex items-center gap-1 mt-1">
+                <span className="text-red-500">{player.demarcacion}</span>
+                <span className="text-slate-700">•</span>
+                <span className="text-slate-400">{player.equipo || 'Sin equipo'}</span>
               </p>
             </div>
             

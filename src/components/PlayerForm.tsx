@@ -61,8 +61,9 @@ export default function PlayerForm({ onClose, onSave, initialData }: Props) {
     setLoading(true);
 
     try {
+      const { id, created_at, ...restData } = formData as any;
       const payload = {
-        ...formData,
+        ...restData,
         dorsal: formData.dorsal ? Number(formData.dorsal) : null
       };
 
@@ -82,7 +83,12 @@ export default function PlayerForm({ onClose, onSave, initialData }: Props) {
       onSave();
       onClose();
     } catch (error: any) {
-      alert('Error guardando jugador: ' + error.message);
+      console.error('Error in handleSubmit:', error);
+      if (error.message?.includes('column "apodo" of relation "jugadores" does not exist')) {
+        alert('Error: La columna "apodo" no existe en tu tabla de Supabase. Debes añadir la columna "apodo" (tipo text, opcional) en el Editor SQL de Supabase antes de guardar.');
+      } else {
+        alert('Error guardando jugador: ' + error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -174,6 +180,16 @@ export default function PlayerForm({ onClose, onSave, initialData }: Props) {
               className="w-full px-4 py-2 bg-brand-slate-800 border border-brand-slate-700 text-white rounded-xl outline-none focus:ring-2 focus:ring-red-500 transition-all shadow-sm"
               value={formData.apellidos}
               onChange={(e) => setFormData({ ...formData, apellidos: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-semibold text-slate-400 lowercase tracking-wider uppercase">Apodo (Opcional)</label>
+            <input
+              className="w-full px-4 py-2 bg-brand-slate-800 border border-brand-slate-700 text-white rounded-xl outline-none focus:ring-2 focus:ring-red-500 transition-all shadow-sm"
+              placeholder='Ej: "Pibe", "Capi"...'
+              value={formData.apodo || ''}
+              onChange={(e) => setFormData({ ...formData, apodo: e.target.value })}
             />
           </div>
 
@@ -316,10 +332,10 @@ export default function PlayerForm({ onClose, onSave, initialData }: Props) {
             <button
               type="submit"
               disabled={loading || uploading}
-              className="flex-1 py-3 bg-red-500 text-slate-950 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-400 transition-all disabled:opacity-50 shadow-lg shadow-red-500/10"
+              className="flex-1 py-3 bg-red-500 text-slate-950 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-400 transition-all disabled:opacity-50 shadow-lg shadow-red-500/10 uppercase tracking-tight"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-              Guardar Jugador
+              {formData.apodo || (initialData ? 'Confirmar Cambios' : 'Registrar Jugador')}
             </button>
           </div>
         </form>

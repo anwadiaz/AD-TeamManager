@@ -104,12 +104,32 @@ export default function App() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro?')) return;
-    const table = viewMode === 'players' ? 'jugadores' : 'partidos';
-    const { error } = await supabase.from(table).delete().eq('id', id);
-    if (!error) {
-      if (viewMode === 'players') setPlayers(players.filter(p => p.id !== id));
-      else setMatches(matches.filter(m => m.id !== id));
+    if (!confirm('¿Estás seguro de eliminar este registro?')) return;
+    
+    try {
+      const table = viewMode === 'players' ? 'jugadores' : 'partidos';
+      
+      // If deleting a player, we might want to alert about dependencies or try to handle them
+      const { error } = await supabase.from(table).delete().eq('id', id);
+      
+      if (error) {
+        console.error('Delete error:', error);
+        if (error.code === '23503') {
+          alert('No se puede eliminar: Existen datos (evaluaciones o alineaciones) asociados a este jugador. Elimina primero sus evaluaciones.');
+        } else {
+          alert('Error al eliminar: ' + error.message);
+        }
+        return;
+      }
+
+      if (viewMode === 'players') {
+        setPlayers(players.filter(p => p.id !== id));
+      } else {
+        setMatches(matches.filter(m => m.id !== id));
+      }
+    } catch (err: any) {
+      console.error('Unexpected delete error:', err);
+      alert('Error inesperado: ' + err.message);
     }
   };
 
