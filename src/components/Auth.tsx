@@ -44,6 +44,7 @@ export default function Auth() {
                 src={getDirectImageUrl(APP_CONFIG.logo)} 
                 alt="Logo" 
                 className="w-full h-full object-contain"
+                referrerPolicy="no-referrer"
                 onError={(e) => {
                   // Fallback if the image fails to load
                   e.currentTarget.src = '';

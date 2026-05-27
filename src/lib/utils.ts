@@ -21,11 +21,11 @@ export function getDirectImageUrl(url: string | null | undefined): string {
   if (!url) return '';
   
   // Google Drive conversion
-  // Matches IDs in /file/d/ID/view, open?id=ID, or uc?id=ID
-  const driveMatch = url.match(/(?:\/file\/d\/|id=|id\/)([\w-]+)/);
+  // Matches IDs in /file/d/ID/view, open?id=ID, uc?id=ID, or sharing links
+  const driveMatch = url.match(/(?:\/file\/d\/|id=|id\/|d\/)([\w-]+)/);
   if (driveMatch && driveMatch[1]) {
-    // Both common direct link formats - uc?export=view is usually standard
-    return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+    // lh3.googleusercontent.com is often more reliable for direct embedding than uc?export=view
+    return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
   }
   
   return url;
