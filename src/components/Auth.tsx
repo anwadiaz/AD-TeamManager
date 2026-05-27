@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { LogIn, UserPlus, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { APP_CONFIG } from '../lib/config';
+import { getDirectImageUrl } from '../lib/utils';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -36,11 +38,15 @@ export default function Auth() {
         className="w-full max-w-md bento-card p-8"
       >
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-red-500 text-slate-950 mb-4 shadow-lg shadow-red-500/20">
-            <LogIn className="w-8 h-8" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-brand-slate-900 border border-brand-slate-800 text-red-500 mb-4 shadow-xl overflow-hidden">
+            {APP_CONFIG.logo ? (
+              <img src={getDirectImageUrl(APP_CONFIG.logo)} alt="Logo" className="w-full h-full object-contain p-2" />
+            ) : (
+              <LogIn className="w-10 h-10" />
+            )}
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Team Manager</h1>
-          <p className="text-slate-400">Gestión profesional de plantillas</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{APP_CONFIG.name}</h1>
+          <p className="text-slate-400">{APP_CONFIG.description}</p>
         </div>
 
         <form onSubmit={handleAuth} className="space-y-4">

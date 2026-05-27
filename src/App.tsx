@@ -12,6 +12,8 @@ import { Plus, Users, LogOut, Loader2, Search, Filter, Trophy, Bell, Settings, L
 import type { Player, Match, Evaluation } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 
+import { APP_CONFIG } from './lib/config';
+
 type ViewMode = 'players' | 'matches' | 'notifications' | 'evaluations';
 type PlayoutMode = 'grid' | 'table';
 
@@ -174,7 +176,7 @@ export default function App() {
           <div className="flex items-center gap-4">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white uppercase flex items-center gap-2">
               {viewMode === 'players' ? 'Plantilla' : viewMode === 'matches' ? 'Partidos' : viewMode === 'notifications' ? 'Notificaciones' : 'Evaluaciones'}
-              <span className="text-red-500">Pro</span>
+              <span className="text-red-500">{APP_CONFIG.name.split(' ').pop()}</span>
             </h1>
           </div>
 

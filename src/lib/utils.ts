@@ -13,3 +13,19 @@ export function formatDate(dateString: string) {
     year: 'numeric'
   });
 }
+
+/**
+ * Converts common cloud storage links (like Google Drive) to direct image URLs
+ */
+export function getDirectImageUrl(url: string | null | undefined): string {
+  if (!url) return '';
+  
+  // Google Drive conversion
+  // Handle both /file/d/ID/view and ?id=ID formats
+  const driveMatch = url.match(/\/(?:file\/d\/|open\?id=)([\w-]+)/);
+  if (driveMatch && driveMatch[1]) {
+    return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+  }
+  
+  return url;
+}
