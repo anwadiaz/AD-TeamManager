@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { X, Upload, Loader2, Save, Trash2 } from 'lucide-react';
 import type { PlayerFormData, Demarcacion, Lateralidad } from '../types';
 import { supabase } from '../lib/supabase';

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Save, Loader2, Calendar, Trophy, Users } from 'lucide-react';
 import type { Match, Player, Lineup } from '../types';
 import { supabase } from '../lib/supabase';

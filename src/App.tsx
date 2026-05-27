@@ -33,9 +33,25 @@ export default function App() {
   const [filterTalla, setFilterTalla] = useState<string>('Todas');
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    const initSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          if (error.message.includes('refresh_token_not_found') || error.message.includes('Refresh Token Not Found')) {
+            await supabase.auth.signOut();
+          }
+          throw error;
+        }
+        setSession(session);
+      } catch (err) {
+        console.error('Auth check error:', err);
+        setSession(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
@@ -338,7 +354,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-10 left-4 right-4 h-16 bg-brand-slate-900/90 backdrop-blur-xl border border-brand-slate-800 flex items-center justify-around px-4 z-40 rounded-2xl shadow-2xl safe-area-pb">
+      <nav className="lg:hidden fixed bottom-10 left-4 right-4 h-16 bg-brand-slate-900/90 backdrop-blur-xl border border-brand-slate-800 flex items-center justify-center gap-2 px-4 z-40 rounded-2xl shadow-2xl safe-area-pb">
         <button 
           onClick={() => setViewMode('players')}
           className={`relative p-3 rounded-xl transition-all ${viewMode === 'players' ? 'text-red-500 scale-110' : 'text-slate-500'}`}

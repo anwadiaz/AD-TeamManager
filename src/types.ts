@@ -49,7 +49,7 @@ export interface Lineup {
   es_titular: boolean;
 }
 
-export interface PlayerFormData extends Partial<Omit<Player, 'id' | 'created_at'>> {
+export interface PlayerFormData extends Omit<Partial<Player>, 'id' | 'created_at' | 'dorsal'> {
   nombre: string;
   apellidos: string;
   dorsal: number | string;
