@@ -13,6 +13,8 @@ import type { Player, Match, Evaluation } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserMenu } from './components/UserMenu';
 
+import { ConfirmModal } from './components/ConfirmModal';
+
 import { APP_CONFIG } from './lib/config';
 
 type ViewMode = 'players' | 'matches' | 'notifications' | 'evaluations' | 'profile' | 'settings';
@@ -27,6 +29,7 @@ export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('players');
   const [playoutMode, setPlayoutMode] = useState<PlayoutMode>('grid');
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string, type: 'players' | 'matches' } | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -103,26 +106,31 @@ export default function App() {
     if (!error) setEvaluations(data || []);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar este registro?')) return;
+  const handleDelete = (id: string) => {
+    setConfirmDelete({ id, type: viewMode === 'players' ? 'players' : 'matches' });
+  };
+
+  const executeDelete = async () => {
+    if (!confirmDelete) return;
+    const { id, type } = confirmDelete;
+    setConfirmDelete(null);
     
     try {
-      const table = viewMode === 'players' ? 'jugadores' : 'partidos';
+      const table = type === 'players' ? 'jugadores' : 'partidos';
       
-      // If deleting a player, we might want to alert about dependencies or try to handle them
       const { error } = await supabase.from(table).delete().eq('id', id);
       
       if (error) {
         console.error('Delete error:', error);
         if (error.code === '23503') {
-          alert('No se puede eliminar: Existen datos (evaluaciones o alineaciones) asociados a este jugador. Elimina primero sus evaluaciones.');
+          alert('No se puede eliminar: Existen datos asociados a este registro. Elimina primero sus dependencias.');
         } else {
           alert('Error al eliminar: ' + error.message);
         }
         return;
       }
 
-      if (viewMode === 'players') {
+      if (type === 'players') {
         setPlayers(players.filter(p => p.id !== id));
       } else {
         setMatches(matches.filter(m => m.id !== id));
@@ -374,6 +382,15 @@ export default function App() {
           />
         )}
       </AnimatePresence>
+
+      <ConfirmModal
+        isOpen={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={executeDelete}
+        title={confirmDelete?.type === 'players' ? '¿Eliminar Jugador?' : '¿Eliminar Partido?'}
+        message="Esta acción no se puede deshacer. Se eliminarán todos los datos asociados de forma permanente."
+        confirmLabel="Eliminar Definitivamente"
+      />
 
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-10 left-4 right-4 h-16 bg-brand-slate-900/95 backdrop-blur-2xl border border-brand-slate-800 flex items-center justify-between px-6 z-40 rounded-2xl shadow-2xl safe-area-pb">
