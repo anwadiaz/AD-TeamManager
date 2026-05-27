@@ -21,9 +21,10 @@ export function getDirectImageUrl(url: string | null | undefined): string {
   if (!url) return '';
   
   // Google Drive conversion
-  // Handle both /file/d/ID/view and ?id=ID formats
-  const driveMatch = url.match(/\/(?:file\/d\/|open\?id=)([\w-]+)/);
+  // Matches IDs in /file/d/ID/view, open?id=ID, or uc?id=ID
+  const driveMatch = url.match(/(?:\/file\/d\/|id=|id\/)([\w-]+)/);
   if (driveMatch && driveMatch[1]) {
+    // Both common direct link formats - uc?export=view is usually standard
     return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
   }
   

@@ -38,11 +38,21 @@ export default function Auth() {
         className="w-full max-w-md bento-card p-8"
       >
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-brand-slate-900 border border-brand-slate-800 text-red-500 mb-4 shadow-xl overflow-hidden">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-brand-slate-900 border border-brand-slate-800 text-red-500 mb-4 shadow-xl overflow-hidden p-1">
             {APP_CONFIG.logo ? (
-              <img src={getDirectImageUrl(APP_CONFIG.logo)} alt="Logo" className="w-full h-full object-contain p-2" />
+              <img 
+                src={getDirectImageUrl(APP_CONFIG.logo)} 
+                alt="Logo" 
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  // Fallback if the image fails to load
+                  e.currentTarget.src = '';
+                  e.currentTarget.classList.add('hidden');
+                  e.currentTarget.parentElement?.classList.add('flex-col');
+                }}
+              />
             ) : (
-              <LogIn className="w-10 h-10" />
+              <LogIn className="w-12 h-12" />
             )}
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">{APP_CONFIG.name}</h1>
