@@ -20,11 +20,11 @@ export default function PlayerTable({ players, onEdit, onDelete, onView }: Props
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Talla</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">PJ</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">PT</th>
-            <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><Trophy size={12} className="inline mr-1" /> G</th>
+            <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><Timer size={12} className="inline mr-1" /> MIN</th>
+            <th className="px-4 py-4 pl-8 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><Trophy size={12} className="inline mr-1" /> G</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><Award size={12} className="inline mr-1" /> A</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><RectangleHorizontal size={10} className="inline rotate-90 text-yellow-500" /></th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><RectangleHorizontal size={10} className="inline rotate-90 text-red-500" /></th>
-            <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center"><Timer size={12} className="inline mr-1" /> MIN</th>
             <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Acciones</th>
           </tr>
         </thead>
@@ -64,11 +64,11 @@ export default function PlayerTable({ players, onEdit, onDelete, onView }: Props
               </td>
               <td className="px-4 py-3 text-center font-mono text-sm text-slate-400">{player.partidos_jugados || 0}</td>
               <td className="px-4 py-3 text-center font-mono text-sm text-slate-400">{player.titularidades || 0}</td>
-              <td className="px-4 py-3 text-center font-mono text-sm text-white font-bold">{player.goles || 0}</td>
+              <td className="px-4 py-3 text-center font-mono text-sm text-blue-400">{player.minutos_jugados || 0}</td>
+              <td className="px-4 py-3 pl-8 text-center font-mono text-sm text-white font-bold">{player.goles || 0}</td>
               <td className="px-4 py-3 text-center font-mono text-sm text-slate-400">{player.asistencias || 0}</td>
               <td className="px-4 py-3 text-center font-mono text-sm text-yellow-500/80">{player.tarjetas_amarillas || 0}</td>
               <td className="px-4 py-3 text-center font-mono text-sm text-red-500/80">{player.tarjetas_rojas || 0}</td>
-              <td className="px-4 py-3 text-center font-mono text-sm text-blue-400">{player.minutos_jugados || 0}</td>
               <td className="px-4 py-3 text-right">
                 <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button onClick={() => onView(player)} className="p-1 text-slate-500 hover:text-white transition-colors">

@@ -124,20 +124,11 @@ export default function PlayerDetail({ player, onClose }: Props) {
               <div className="grid grid-cols-2 gap-3">
                 <StatCard label="P. Jugados" value={player.partidos_jugados} icon={<Award size={14} />} color="blue" />
                 <StatCard label="Titular" value={player.titularidades} icon={<Award size={14} />} color="blue" />
+                <StatCard label="Minutos" value={player.minutos_jugados} icon={<Timer size={14} />} color="blue" />
                 <StatCard label="Goles" value={player.goles} icon={<Trophy size={14} />} color="red" />
                 <StatCard label="Asistencias" value={player.asistencias} icon={<Award size={14} />} color="blue" />
                 <StatCard label="Amarillas" value={player.tarjetas_amarillas} icon={<RectangleHorizontal size={14} className="rotate-90" />} color="yellow" />
                 <StatCard label="Rojas" value={player.tarjetas_rojas} icon={<RectangleHorizontal size={14} className="rotate-90" />} color="red" />
-              </div>
-
-              <div className="bg-brand-slate-950 p-4 rounded-2xl border border-brand-slate-800 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
-                    <Timer size={18} />
-                  </div>
-                  <span className="text-xs font-bold text-slate-400 uppercase">Minutos Jugados</span>
-                </div>
-                <span className="text-2xl font-black text-white">{player.minutos_jugados}</span>
               </div>
             </div>
 

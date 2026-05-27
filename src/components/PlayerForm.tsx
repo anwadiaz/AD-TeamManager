@@ -295,6 +295,15 @@ export default function PlayerForm({ onClose, onSave, initialData }: Props) {
               />
             </div>
             <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-500 uppercase">Minutos</label>
+              <input
+                type="number"
+                className="w-full px-3 py-1.5 bg-brand-slate-800 border border-brand-slate-700 text-white rounded-lg outline-none text-sm"
+                value={formData.minutos_jugados || 0}
+                onChange={(e) => setFormData({ ...formData, minutos_jugados: Number(e.target.value) })}
+              />
+            </div>
+            <div className="space-y-1">
               <label className="text-[10px] font-bold text-slate-500 uppercase">Goles</label>
               <input
                 type="number"
@@ -328,15 +337,6 @@ export default function PlayerForm({ onClose, onSave, initialData }: Props) {
                 className="w-full px-3 py-1.5 bg-brand-slate-800 border border-brand-slate-700 text-white rounded-lg outline-none text-sm"
                 value={formData.tarjetas_rojas || 0}
                 onChange={(e) => setFormData({ ...formData, tarjetas_rojas: Number(e.target.value) })}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-500 uppercase">Minutos</label>
-              <input
-                type="number"
-                className="w-full px-3 py-1.5 bg-brand-slate-800 border border-brand-slate-700 text-white rounded-lg outline-none text-sm"
-                value={formData.minutos_jugados || 0}
-                onChange={(e) => setFormData({ ...formData, minutos_jugados: Number(e.target.value) })}
               />
             </div>
           </div>
