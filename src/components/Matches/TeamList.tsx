@@ -131,7 +131,7 @@ const TeamList = forwardRef<TeamListHandle, {}>((props, ref) => {
 
             <div className="relative group/logo">
               <div className="w-32 h-32 rounded-3xl bg-brand-slate-950 flex items-center justify-center overflow-hidden border-2 border-brand-slate-800 group-hover:border-red-500/50 transition-colors">
-                {team.logo_url ? (
+                {team.logo_url && team.logo_url.trim() !== '' ? (
                   <img src={team.logo_url} alt={team.name} className="w-full h-full object-cover" />
                 ) : (
                   <Upload className="text-slate-700" size={32} />

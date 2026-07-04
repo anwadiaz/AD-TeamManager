@@ -10,7 +10,8 @@ import EvaluationManager from './components/EvaluationManager';
 import MatchList from './components/MatchList';
 import MatchForm from './components/MatchForm';
 import MatchesManager from './components/Matches/MatchesManager';
-import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star, Upload, Activity } from 'lucide-react';
+import MyTeamProfile from './components/MyTeam/MyTeamProfile';
+import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star, Upload, Activity, Shield } from 'lucide-react';
 import type { Player, Match, Evaluation } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserMenu } from './components/UserMenu';
@@ -19,7 +20,7 @@ import { ConfirmModal } from './components/ConfirmModal';
 
 import { APP_CONFIG } from './lib/config';
 
-type ViewMode = 'players' | 'results' | 'analysis' | 'notifications' | 'evaluations' | 'profile' | 'settings';
+type ViewMode = 'players' | 'results' | 'analysis' | 'notifications' | 'evaluations' | 'profile' | 'settings' | 'my-team';
 type PlayoutMode = 'grid' | 'table';
 
 export default function App() {
@@ -180,16 +181,31 @@ export default function App() {
       <nav className="w-20 bento-card flex flex-col items-center py-8 gap-8 shrink-0 hidden lg:flex">
         <UserMenu email={session?.user?.email} onNavigate={setViewMode} currentView={viewMode} />
 
-        <div 
-          onClick={() => setViewMode('players')}
-          className={`w-12 h-12 rounded-2xl flex items-center justify-center cursor-pointer transition-all ${
-            viewMode === 'players' ? 'bg-red-500 text-slate-950 shadow-lg shadow-red-500/20' : 'bg-brand-slate-800 text-slate-500'
-          }`}
-        >
-          <Users size={24} />
-        </div>
-        
         <div className="flex flex-col gap-6">
+          <div 
+            onClick={() => setViewMode('my-team')}
+            className={`p-3 rounded-xl transition-all cursor-pointer group relative ${
+              viewMode === 'my-team' ? 'bg-brand-slate-800 text-red-400' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <Shield size={24} />
+            <div className="absolute left-full ml-4 px-2 py-1 bg-brand-slate-900 text-white text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              Mi Equipo
+            </div>
+          </div>
+
+          <div 
+            onClick={() => setViewMode('players')}
+            className={`p-3 rounded-xl transition-all cursor-pointer group relative ${
+              viewMode === 'players' ? 'bg-brand-slate-800 text-red-400' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <Users size={24} />
+            <div className="absolute left-full ml-4 px-2 py-1 bg-brand-slate-900 text-white text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              Plantilla
+            </div>
+          </div>
+
           <div 
             onClick={() => setViewMode('analysis')}
             className={`p-3 rounded-xl transition-all cursor-pointer group relative ${
@@ -237,7 +253,7 @@ export default function App() {
         <header className="bento-card bg-brand-slate-900/50 px-6 sm:px-8 py-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white uppercase flex items-center gap-2">
-              {viewMode === 'players' ? 'Plantilla' : viewMode === 'results' ? 'Resultados' : viewMode === 'analysis' ? 'Partidos' : viewMode === 'notifications' ? 'Notificaciones' : 'Evaluaciones'}
+              {viewMode === 'players' ? 'Plantilla' : viewMode === 'results' ? 'Resultados' : viewMode === 'analysis' ? 'Partidos' : viewMode === 'notifications' ? 'Notificaciones' : viewMode === 'my-team' ? 'Mi Equipo' : 'Evaluaciones'}
               <span className="text-red-500">{APP_CONFIG.name.split(' ').pop()}</span>
             </h1>
           </div>
@@ -301,6 +317,7 @@ export default function App() {
                      viewMode === 'analysis' ? 'Panel de Partido' :
                      viewMode === 'notifications' ? 'Centro de Avisos' :
                      viewMode === 'evaluations' ? 'Sistema de Evaluación' :
+                     viewMode === 'my-team' ? 'Perfil del Club' :
                      viewMode === 'profile' ? 'Configuración de Perfil' : 'Ajustes del Sistema'}
                   </h2>
                 </div>
@@ -387,6 +404,7 @@ export default function App() {
                   {viewMode === 'analysis' && <MatchesManager />}
                   {viewMode === 'notifications' && <NotificationCenter />}
                   {viewMode === 'evaluations' && <EvaluationManager players={players} session={session} />}
+                  {viewMode === 'my-team' && <MyTeamProfile />}
                   {viewMode === 'profile' && <ProfileView session={session} />}
                   {viewMode === 'settings' && <SettingsView />}
                 </>
@@ -445,6 +463,13 @@ export default function App() {
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-10 left-4 right-4 h-16 bg-brand-slate-900/95 backdrop-blur-2xl border border-brand-slate-800 flex items-center justify-between px-6 z-40 rounded-2xl shadow-2xl safe-area-pb">
         <UserMenu email={session?.user?.email} isMobile onNavigate={setViewMode} currentView={viewMode} />
+        <button 
+          onClick={() => setViewMode('my-team')}
+          className={`relative p-3 rounded-xl transition-all ${viewMode === 'my-team' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
+        >
+          <Shield size={24} />
+          {viewMode === 'my-team' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
+        </button>
         <button 
           onClick={() => setViewMode('players')}
           className={`relative p-3 rounded-xl transition-all ${viewMode === 'players' ? 'text-red-500 scale-110' : 'text-slate-500'}`}

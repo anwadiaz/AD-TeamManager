@@ -91,7 +91,7 @@ export default function PlayerDetail({ player, onClose }: Props) {
         <div className="px-8 pb-8 -mt-16 relative z-10">
           <div className="flex flex-col sm:flex-row items-end gap-6 mb-8">
             <div className="w-32 h-32 rounded-3xl bg-brand-slate-800 border-4 border-brand-slate-900 overflow-hidden shadow-xl">
-              {player.foto_jugador ? (
+              {player.foto_jugador && player.foto_jugador.trim() !== '' ? (
                 <img src={player.foto_jugador} alt={player.nombre} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-slate-700">

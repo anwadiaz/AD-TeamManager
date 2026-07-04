@@ -22,7 +22,7 @@ export default function PlayerList({ players, onEdit, onDelete, onView }: Props)
           className="bento-card overflow-hidden group hover:shadow-2xl hover:shadow-black/40 transition-all duration-300"
         >
           <div className="relative h-48 overflow-hidden bg-brand-slate-800">
-            {player.foto_jugador ? (
+            {player.foto_jugador && player.foto_jugador.trim() !== '' ? (
               <img 
                 src={player.foto_jugador} 
                 alt={player.nombre} 
