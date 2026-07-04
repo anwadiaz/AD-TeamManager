@@ -9,7 +9,8 @@ import PlayerTable from './components/PlayerTable';
 import EvaluationManager from './components/EvaluationManager';
 import MatchList from './components/MatchList';
 import MatchForm from './components/MatchForm';
-import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star, Upload } from 'lucide-react';
+import MatchesManager from './components/Matches/MatchesManager';
+import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star, Upload, Activity } from 'lucide-react';
 import type { Player, Match, Evaluation } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserMenu } from './components/UserMenu';
@@ -18,7 +19,7 @@ import { ConfirmModal } from './components/ConfirmModal';
 
 import { APP_CONFIG } from './lib/config';
 
-type ViewMode = 'players' | 'matches' | 'notifications' | 'evaluations' | 'profile' | 'settings';
+type ViewMode = 'players' | 'results' | 'analysis' | 'notifications' | 'evaluations' | 'profile' | 'settings';
 type PlayoutMode = 'grid' | 'table';
 
 export default function App() {
@@ -80,7 +81,7 @@ export default function App() {
     setLoading(true);
     if (viewMode === 'players') {
       await fetchPlayers();
-    } else if (viewMode === 'matches') {
+    } else if (viewMode === 'results') {
       await fetchMatches();
     } else if (viewMode === 'evaluations') {
       await fetchEvaluations();
@@ -190,16 +191,30 @@ export default function App() {
         
         <div className="flex flex-col gap-6">
           <div 
-            onClick={() => setViewMode('matches')}
-            className={`p-3 rounded-xl transition-all cursor-pointer ${
-              viewMode === 'matches' ? 'bg-brand-slate-800 text-red-400' : 'text-slate-500 hover:text-slate-300'
+            onClick={() => setViewMode('analysis')}
+            className={`p-3 rounded-xl transition-all cursor-pointer group relative ${
+              viewMode === 'analysis' ? 'bg-brand-slate-800 text-red-400' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <Activity size={24} />
+            <div className="absolute left-full ml-4 px-2 py-1 bg-brand-slate-900 text-white text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              Análisis Partidos
+            </div>
+          </div>
+          <div 
+            onClick={() => setViewMode('results')}
+            className={`p-3 rounded-xl transition-all cursor-pointer group relative ${
+              viewMode === 'results' ? 'bg-brand-slate-800 text-red-400' : 'text-slate-500 hover:text-slate-300'
             }`}
           >
             <Trophy size={24} />
+            <div className="absolute left-full ml-4 px-2 py-1 bg-brand-slate-900 text-white text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              Resultados
+            </div>
           </div>
           <div 
             onClick={() => setViewMode('notifications')}
-            className={`p-3 rounded-xl transition-all cursor-pointer ${
+            className={`p-3 rounded-xl transition-all cursor-pointer group relative ${
               viewMode === 'notifications' ? 'bg-brand-slate-800 text-red-400' : 'text-slate-500 hover:text-slate-300'
             }`}
           >
@@ -207,7 +222,7 @@ export default function App() {
           </div>
           <div 
             onClick={() => setViewMode('evaluations')}
-            className={`p-3 rounded-xl transition-all cursor-pointer ${
+            className={`p-3 rounded-xl transition-all cursor-pointer group relative ${
               viewMode === 'evaluations' ? 'bg-brand-slate-800 text-red-400' : 'text-slate-500 hover:text-slate-300'
             }`}
           >
@@ -222,7 +237,7 @@ export default function App() {
         <header className="bento-card bg-brand-slate-900/50 px-6 sm:px-8 py-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white uppercase flex items-center gap-2">
-              {viewMode === 'players' ? 'Plantilla' : viewMode === 'matches' ? 'Partidos' : viewMode === 'notifications' ? 'Notificaciones' : 'Evaluaciones'}
+              {viewMode === 'players' ? 'Plantilla' : viewMode === 'results' ? 'Resultados' : viewMode === 'analysis' ? 'Partidos' : viewMode === 'notifications' ? 'Notificaciones' : 'Evaluaciones'}
               <span className="text-red-500">{APP_CONFIG.name.split(' ').pop()}</span>
             </h1>
           </div>
@@ -239,7 +254,7 @@ export default function App() {
               />
             </div>
             
-            {(viewMode === 'players' || viewMode === 'matches') && (
+            {(viewMode === 'players' || viewMode === 'results') && (
               <div className="flex items-center gap-2">
                 {viewMode === 'players' && players.length === 0 && (
                   <button 
@@ -267,7 +282,7 @@ export default function App() {
                   }}
                   className="bg-red-500 hover:bg-red-400 text-slate-950 font-bold px-3 py-1.5 rounded-full text-[10px] md:text-xs transition-all shadow-lg shadow-red-500/20 active:scale-95 whitespace-nowrap"
                 >
-                  + {viewMode === 'players' ? 'Nuevo Jugador' : 'Nuevo Partido'}
+                  + {viewMode === 'players' ? 'Nuevo Jugador' : 'Nuevo Resultado'}
                 </button>
               </div>
             )}
@@ -277,12 +292,13 @@ export default function App() {
         {/* Inner Grid Container */}
         <div className="flex-1 overflow-y-auto pr-1">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 h-full">
-            <section className="md:col-span-8 lg:col-span-9 bento-card p-6 min-h-[400px]">
+            <section className={`${viewMode === 'analysis' ? 'md:col-span-12 lg:col-span-12' : 'md:col-span-8 lg:col-span-9'} bento-card p-6 min-h-[400px]`}>
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h2 className="text-lg font-bold text-white uppercase tracking-wide">
                     {viewMode === 'players' ? 'Gestión de Jugadores' : 
-                     viewMode === 'matches' ? 'Registro de Resultados' :
+                     viewMode === 'results' ? 'Registro de Resultados' :
+                     viewMode === 'analysis' ? 'Panel de Partido' :
                      viewMode === 'notifications' ? 'Centro de Avisos' :
                      viewMode === 'evaluations' ? 'Sistema de Evaluación' :
                      viewMode === 'profile' ? 'Configuración de Perfil' : 'Ajustes del Sistema'}
@@ -359,7 +375,7 @@ export default function App() {
                       )
                     ) : <NoItems />
                   )}
-                  {viewMode === 'matches' && (
+                  {viewMode === 'results' && (
                     filteredMatches.length > 0 ? (
                       <MatchList 
                         matches={filteredMatches} 
@@ -368,6 +384,7 @@ export default function App() {
                       />
                     ) : <NoItems />
                   )}
+                  {viewMode === 'analysis' && <MatchesManager />}
                   {viewMode === 'notifications' && <NotificationCenter />}
                   {viewMode === 'evaluations' && <EvaluationManager players={players} session={session} />}
                   {viewMode === 'profile' && <ProfileView session={session} />}
@@ -376,21 +393,23 @@ export default function App() {
               )}
             </section>
 
-            <section className="md:col-span-4 lg:col-span-3 flex flex-col gap-4">
-              <StatsSidebar players={players} />
-              
-              <div className="bento-card p-6 bg-red-400 border-none text-slate-950 flex flex-col justify-between overflow-hidden relative group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-slate-950/5 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-700"></div>
-                <div className="relative z-10">
-                  <h4 className="text-lg font-black uppercase leading-tight">Admin Elite</h4>
-                  <p className="text-[10px] uppercase font-bold opacity-70 mt-1 tracking-wider">Firebase Cloud Messaging</p>
+            {viewMode !== 'analysis' && (
+              <section className="md:col-span-4 lg:col-span-3 flex flex-col gap-4">
+                <StatsSidebar players={players} />
+                
+                <div className="bento-card p-6 bg-red-400 border-none text-slate-950 flex flex-col justify-between overflow-hidden relative group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-slate-950/5 rounded-full -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-700"></div>
+                  <div className="relative z-10">
+                    <h4 className="text-lg font-black uppercase leading-tight">Admin Elite</h4>
+                    <p className="text-[10px] uppercase font-bold opacity-70 mt-1 tracking-wider">Firebase Cloud Messaging</p>
+                  </div>
+                  <div className="mt-8">
+                    <div className="text-4xl font-black text-slate-950/20 mb-2">PRO</div>
+                    <div className="text-[10px] font-bold uppercase tracking-tight">Push Notifications Ready</div>
+                  </div>
                 </div>
-                <div className="mt-8">
-                  <div className="text-4xl font-black text-slate-950/20 mb-2">PRO</div>
-                  <div className="text-[10px] font-bold uppercase tracking-tight">Push Notifications Ready</div>
-                </div>
-              </div>
-            </section>
+              </section>
+            )}
           </div>
         </div>
       </main>
@@ -434,11 +453,18 @@ export default function App() {
           {viewMode === 'players' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
         </button>
         <button 
-          onClick={() => setViewMode('matches')}
-          className={`relative p-3 rounded-xl transition-all ${viewMode === 'matches' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
+          onClick={() => setViewMode('analysis')}
+          className={`relative p-3 rounded-xl transition-all ${viewMode === 'analysis' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
+        >
+          <Activity size={24} />
+          {viewMode === 'analysis' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
+        </button>
+        <button 
+          onClick={() => setViewMode('results')}
+          className={`relative p-3 rounded-xl transition-all ${viewMode === 'results' ? 'text-red-500 scale-110' : 'text-slate-500'}`}
         >
           <Trophy size={24} />
-          {viewMode === 'matches' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
+          {viewMode === 'results' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
         </button>
         <button 
           onClick={() => setViewMode('notifications')}
