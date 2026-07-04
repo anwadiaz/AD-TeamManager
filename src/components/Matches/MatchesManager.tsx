@@ -12,7 +12,7 @@ export default function MatchesManager() {
   const [activeTab, setActiveTab] = useState<TabType>('equipos');
 
   const tabs = [
-    { id: 'equipos', label: 'Lista de Equipos', icon: Users },
+    { id: 'equipos', label: 'Equipos', icon: Users },
     { id: 'rival', label: 'Informe Rival', icon: FileText },
     { id: 'plan', label: 'Plan Partido', icon: Layout },
     { id: 'eventos', label: 'Eventos', icon: Activity },
