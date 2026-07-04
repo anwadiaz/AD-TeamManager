@@ -9,12 +9,12 @@ export default function RivalReport() {
     offensive: string;
     defensive: string;
     transitions: string;
-    youtubeUrl: string;
+    youtube_url: string;
   }>({
     offensive: '',
     defensive: '',
     transitions: '',
-    youtubeUrl: ''
+    youtube_url: ''
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -34,7 +34,7 @@ export default function RivalReport() {
           setReport(data);
         }
       } catch (error) {
-        console.warn('Could not load report, table might not exist yet:', error);
+        console.warn('Could not load report:', error);
       }
     };
     loadReport();
@@ -44,27 +44,38 @@ export default function RivalReport() {
     setSaving(true);
     setSaved(false);
     try {
-      // If we don't have an ID, we try to insert, otherwise we update.
-      // Upserting by ID is safer.
-      const { data, error } = await supabase
-        .from('match_reports')
-        .upsert([
-          { 
-            ...report, 
-            updated_at: new Date().toISOString() 
-          }
-        ], { onConflict: 'id' })
-        .select()
-        .single();
+      const reportToSave = {
+        offensive: report.offensive,
+        defensive: report.defensive,
+        transitions: report.transitions,
+        youtube_url: report.youtube_url,
+        updated_at: new Date().toISOString()
+      };
 
-      if (error) throw error;
-      if (data) setReport(data);
+      let result;
+      if (report.id) {
+        result = await supabase
+          .from('match_reports')
+          .update(reportToSave)
+          .eq('id', report.id)
+          .select()
+          .single();
+      } else {
+        result = await supabase
+          .from('match_reports')
+          .insert([reportToSave])
+          .select()
+          .single();
+      }
+
+      if (result.error) throw result.error;
+      if (result.data) setReport(result.data);
       
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
       console.error('Error saving report:', error);
-      alert('Error al guardar: Asegúrate de haber ejecutado el SQL en Supabase.');
+      alert('Error al guardar: Ejecuta el script SQL en Supabase para crear la tabla "match_reports".');
     } finally {
       setSaving(false);
     }
@@ -72,11 +83,11 @@ export default function RivalReport() {
 
   const getYoutubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
+    const match = url?.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  const youtubeId = getYoutubeId(report.youtubeUrl);
+  const youtubeId = getYoutubeId(report.youtube_url);
 
   return (
     <div className="flex flex-col gap-6 h-full pb-20 relative">
@@ -131,8 +142,8 @@ export default function RivalReport() {
             
             <input
               type="text"
-              value={report.youtubeUrl}
-              onChange={(e) => setReport({ ...report, youtubeUrl: e.target.value })}
+              value={report.youtube_url}
+              onChange={(e) => setReport({ ...report, youtube_url: e.target.value })}
               className="w-full bg-brand-slate-950 border border-brand-slate-800 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-red-500/50 transition-colors"
               placeholder="Introduce la URL de YouTube (ej: https://www.youtube.com/watch?v=...)"
             />
