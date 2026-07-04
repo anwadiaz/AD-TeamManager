@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Player, Evaluation } from '../types';
-import { Star, Send, Loader2, User, Calendar } from 'lucide-react';
+import { Star, Send, Loader2, User, Calendar, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { cn } from '../lib/utils';
 
 interface Props {
   players: Player[];
@@ -17,6 +18,7 @@ export default function EvaluationManager({ players, session }: Props) {
   const [evaluations, setEvaluations] = useState<(Evaluation & { jugadores: Player })[]>([]);
   const [fetching, setFetching] = useState(true);
   const [detalles, setDetalles] = useState<Record<string, number>>({});
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const selectedPlayer = players.find(p => p.id === selectedPlayerId);
 
@@ -32,17 +34,17 @@ export default function EvaluationManager({ players, session }: Props) {
   }, []);
 
   useEffect(() => {
-    if (selectedPlayer) {
+    if (selectedPlayer && !editingId) {
       const criteria = criteriaByPosition[selectedPlayer.demarcacion] || [];
       const newDetalles: Record<string, number> = {};
       criteria.forEach(c => {
         newDetalles[c] = 5;
       });
       setDetalles(newDetalles);
-    } else {
+    } else if (!selectedPlayer) {
       setDetalles({});
     }
-  }, [selectedPlayerId]);
+  }, [selectedPlayerId, editingId]);
 
   const fetchEvaluations = async () => {
     setFetching(true);
@@ -69,22 +71,76 @@ export default function EvaluationManager({ players, session }: Props) {
       detalles: detalles
     });
 
-    const { error } = await supabase
-      .from('evaluaciones')
-      .insert({
-        jugador_id: selectedPlayerId,
-        usuario_id: session.user.id,
-        nota,
-        comentario: detailedComment,
-        fecha: new Date().toISOString().split('T')[0]
-      });
+    let error;
+    if (editingId) {
+      const { error: updateError } = await supabase
+        .from('evaluaciones')
+        .update({
+          jugador_id: selectedPlayerId,
+          nota,
+          comentario: detailedComment,
+          fecha: new Date().toISOString().split('T')[0]
+        })
+        .eq('id', editingId);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('evaluaciones')
+        .insert({
+          jugador_id: selectedPlayerId,
+          usuario_id: session.user.id,
+          nota,
+          comentario: detailedComment,
+          fecha: new Date().toISOString().split('T')[0]
+        });
+      error = insertError;
+    }
 
     if (!error) {
       setComentario('');
       setSelectedPlayerId('');
       setNota(5);
       setDetalles({});
+      setEditingId(null);
       fetchEvaluations();
+      alert(editingId ? 'Evaluación actualizada con éxito' : 'Evaluación publicada con éxito');
+    } else {
+      console.error('Full evaluation submission error:', error);
+      alert(`Error al guardar la evaluación: ${error.message} (${error.code})`);
+    }
+    setLoading(false);
+  };
+
+  const handleEdit = (ev: Evaluation & { jugadores: Player }) => {
+    const { texto, detalles: evDetalles } = parseComment(ev.comentario);
+    setEditingId(ev.id);
+    setSelectedPlayerId(ev.jugador_id);
+    setNota(ev.nota);
+    setComentario(texto);
+    setDetalles(evDetalles || {});
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('¿Estás seguro de que quieres borrar esta evaluación?')) return;
+    
+    setLoading(true);
+    const { error } = await supabase
+      .from('evaluaciones')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      setEvaluations(prev => prev.filter(e => e.id !== id));
+      if (editingId === id) {
+        setEditingId(null);
+        setSelectedPlayerId('');
+        setNota(5);
+        setComentario('');
+        setDetalles({});
+      }
+    } else {
+      alert('Error al borrar evaluación: ' + error.message);
     }
     setLoading(false);
   };
@@ -107,7 +163,7 @@ export default function EvaluationManager({ players, session }: Props) {
       <div className="space-y-6">
         <div className="bento-card bg-brand-slate-900/50 p-6 border border-brand-slate-800">
           <h3 className="text-lg font-bold text-white mb-6 uppercase tracking-tighter flex items-center gap-2">
-            <Star className="text-red-500" size={20} /> Nueva Evaluación
+            <Star className="text-red-500" size={20} /> {editingId ? 'Editar Evaluación' : 'Nueva Evaluación'}
           </h3>
           
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -180,20 +236,38 @@ export default function EvaluationManager({ players, session }: Props) {
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading || !selectedPlayerId}
-              className="w-full bg-red-500 text-slate-950 font-bold py-3 rounded-xl hover:bg-red-400 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-red-500/10 active:scale-95"
-            >
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  <Send size={18} />
-                  Publicar Evaluación
-                </>
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={loading || !selectedPlayerId}
+                className="flex-1 bg-red-500 text-slate-950 font-bold py-3 rounded-xl hover:bg-red-400 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-red-500/10 active:scale-95"
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    <Send size={18} />
+                    {editingId ? 'Actualizar Evaluación' : 'Publicar Evaluación'}
+                  </>
+                )}
+              </button>
+              
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingId(null);
+                    setSelectedPlayerId('');
+                    setNota(5);
+                    setComentario('');
+                    setDetalles({});
+                  }}
+                  className="px-4 py-3 bg-brand-slate-800 text-slate-400 font-bold rounded-xl hover:bg-brand-slate-700 transition-all border border-brand-slate-700 uppercase text-[10px] tracking-widest"
+                >
+                  Cancelar
+                </button>
               )}
-            </button>
+            </div>
           </form>
         </div>
       </div>
@@ -218,19 +292,27 @@ export default function EvaluationManager({ players, session }: Props) {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="bg-brand-slate-900 border border-brand-slate-800 p-5 rounded-2xl relative overflow-hidden group"
+                className={cn(
+                  "border p-5 rounded-2xl relative overflow-hidden group transition-all",
+                  editingId === ev.id 
+                    ? "bg-red-500/5 border-red-500/50 shadow-lg shadow-red-500/10" 
+                    : "bg-brand-slate-900 border-brand-slate-800 hover:border-brand-slate-700"
+                )}
               >
                 <div className="absolute top-0 right-0 w-16 h-16 bg-red-500/5 -mr-8 -mt-8 rounded-full"></div>
                 
                 <div className="flex items-start justify-between relative z-10">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-brand-slate-800 border border-brand-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
+                  <div 
+                    className="flex items-center gap-3 cursor-pointer group/player"
+                    onClick={() => handleEdit(ev)}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-brand-slate-800 border border-brand-slate-700 flex items-center justify-center shrink-0 overflow-hidden group-hover/player:border-red-500/50 transition-colors">
                       {ev.jugadores?.foto_jugador ? (
                         <img src={ev.jugadores.foto_jugador} alt="" className="w-full h-full object-cover" />
                       ) : <User className="text-slate-600" size={20} />}
                     </div>
                     <div>
-                      <h5 className="text-sm font-bold text-white">
+                      <h5 className="text-sm font-bold text-white group-hover/player:text-red-500 transition-colors">
                         {ev.jugadores?.nombre} {ev.jugadores?.apellidos}
                       </h5>
                       <div className="flex items-center gap-2 text-[10px] text-slate-500 mt-0.5">
@@ -243,8 +325,25 @@ export default function EvaluationManager({ players, session }: Props) {
                       </div>
                     </div>
                   </div>
-                  <div className="w-10 h-10 flex items-center justify-center bg-red-500/10 text-red-500 rounded-xl font-black text-lg border border-red-500/20 shadow-inner">
-                    {ev.nota}
+                  <div className="flex items-center gap-3">
+                    <div className="flex flex-col items-end">
+                      <div className="w-10 h-10 flex items-center justify-center bg-red-500/10 text-red-500 rounded-xl font-black text-lg border border-red-500/20 shadow-inner">
+                        {ev.nota}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDelete(ev.id);
+                        }}
+                        className="p-2 text-slate-500 hover:text-red-500 transition-colors bg-brand-slate-950/50 rounded-lg border border-brand-slate-800"
+                        title="Borrar evaluación"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
                 </div>
 

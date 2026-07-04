@@ -12,7 +12,7 @@ import MatchForm from './components/MatchForm';
 import MatchesManager from './components/Matches/MatchesManager';
 import MyTeamProfile from './components/MyTeam/MyTeamProfile';
 import ProfileView from './components/ProfileView';
-import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star, Upload, Activity, Shield, Users2 } from 'lucide-react';
+import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star, Activity, Shield, Users2 } from 'lucide-react';
 import type { Player, Match, Evaluation } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserMenu } from './components/UserMenu';
@@ -100,12 +100,15 @@ export default function App() {
     }
   }, [session, viewMode]);
 
+
   const loadData = async () => {
     setLoading(true);
     if (viewMode === 'players') {
       await fetchPlayers();
     } else if (viewMode === 'results') {
       await fetchMatches();
+    } else if (viewMode === 'analysis') {
+      await Promise.all([fetchPlayers(), fetchMatches()]);
     } else if (viewMode === 'evaluations') {
       await fetchEvaluations();
     }
@@ -295,27 +298,23 @@ export default function App() {
               />
             </div>
             
-            {(viewMode === 'players' || viewMode === 'results') && (
+            {viewMode === 'players' && (
               <div className="flex items-center gap-2">
-                {viewMode === 'players' && (
-                  <button 
-                    onClick={async () => {
-                      const { bulkImportPlayers } = await import('./lib/bulkImport');
-                      if (confirm('¿Quieres importar los jugadores solicitados con sus estadísticas?')) {
-                        try {
-                          await bulkImportPlayers();
-                          fetchPlayers();
-                        } catch (e: any) {
-                          alert('Error al importar: ' + e.message);
-                        }
-                      }
-                    }}
-                    className="flex bg-brand-slate-800 hover:bg-brand-slate-700 text-red-500 font-bold px-3 py-1.5 rounded-full text-[10px] md:text-xs transition-all active:scale-95 items-center gap-2 border border-brand-slate-700"
-                  >
-                    <Upload size={14} />
-                    Importar Plantilla
-                  </button>
-                )}
+
+                <button
+                  onClick={() => {
+                    setEditingItem(null);
+                    setIsFormOpen(true);
+                  }}
+                  className="bg-brand-slate-800 hover:bg-brand-slate-700 text-white font-bold px-3 py-2 rounded-full text-[10px] md:text-xs transition-all border border-brand-slate-700 shadow-lg active:scale-95 whitespace-nowrap"
+                >
+                  + Nuevo Jugador
+                </button>
+              </div>
+            )}
+
+            {viewMode === 'results' && (
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
                     setEditingItem(null);
@@ -323,7 +322,7 @@ export default function App() {
                   }}
                   className="bg-red-500 hover:bg-red-400 text-slate-950 font-bold px-3 py-1.5 rounded-full text-[10px] md:text-xs transition-all shadow-lg shadow-red-500/20 active:scale-95 whitespace-nowrap"
                 >
-                  + {viewMode === 'players' ? 'Nuevo Jugador' : 'Nuevo Resultado'}
+                  + Nuevo Resultado
                 </button>
               </div>
             )}
@@ -426,7 +425,7 @@ export default function App() {
                       />
                     ) : <NoItems />
                   )}
-                  {viewMode === 'analysis' && <MatchesManager />}
+                  {viewMode === 'analysis' && <MatchesManager players={players} matches={matches} />}
                   {viewMode === 'notifications' && <NotificationCenter />}
                   {viewMode === 'evaluations' && <EvaluationManager players={players} session={session} />}
                   {viewMode === 'my-team' && <MyTeamProfile />}

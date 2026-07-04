@@ -1,9 +1,53 @@
-import { useState } from 'react';
-import { Presentation, Youtube } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Presentation, Youtube, Save, Loader2, CheckCircle2 } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
-export default function MatchPlan() {
-  const [slidesUrl, setSlidesUrl] = useState('');
-  const [youtubeUrl, setYoutubeUrl] = useState('');
+interface MatchPlanProps {
+  matchId: string;
+  initialData?: {
+    slides_url: string;
+    youtube_url: string;
+  };
+}
+
+export default function MatchPlan({ matchId, initialData }: MatchPlanProps) {
+  const [slidesUrl, setSlidesUrl] = useState(initialData?.slides_url || '');
+  const [youtubeUrl, setYoutubeUrl] = useState(initialData?.youtube_url || '');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setSlidesUrl(initialData.slides_url || '');
+      setYoutubeUrl(initialData.youtube_url || '');
+    }
+  }, [matchId, initialData]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaved(false);
+    try {
+      const { error } = await supabase
+        .from('partidos')
+        .update({ 
+          plan_partido: {
+            slides_url: slidesUrl,
+            youtube_url: youtubeUrl
+          } 
+        })
+        .eq('id', matchId);
+
+      if (error) throw error;
+      
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      console.error('Error saving match plan:', error);
+      alert('Error al guardar el plan.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const getYoutubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -96,6 +140,28 @@ export default function MatchPlan() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Floating Save Button */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          title={saving ? 'Guardando...' : saved ? '¡Guardado!' : 'Guardar Plan'}
+          className={`flex items-center justify-center w-14 h-14 rounded-2xl transition-all shadow-2xl active:scale-95 ${
+            saved 
+              ? 'bg-green-500 text-slate-950' 
+              : 'bg-red-500 text-slate-950 hover:bg-red-400 hover:shadow-red-500/20'
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          {saving ? (
+            <Loader2 className="animate-spin" size={24} />
+          ) : saved ? (
+            <CheckCircle2 size={24} />
+          ) : (
+            <Save size={24} />
+          )}
+        </button>
       </div>
     </div>
   );

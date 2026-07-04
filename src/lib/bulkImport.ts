@@ -25,10 +25,42 @@ export const squadData: PlayerFormData[] = [
 ];
 
 export async function bulkImportPlayers() {
-  const { error } = await supabase.from('jugadores').insert(squadData);
+  console.log('Iniciando importación masiva de 20 jugadores...');
+  
+  // Intentar obtener sesión actual para el user_id
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
+
+  // Limpiar datos y asegurar que coincidan con el esquema
+  const cleanData = squadData.map(player => ({
+    nombre: player.nombre,
+    apellidos: player.apellidos,
+    apodo: player.apodo || player.nombre,
+    dorsal: player.dorsal,
+    demarcacion: player.demarcacion,
+    lateralidad: player.lateralidad || 'Diestro',
+    equipo: player.equipo || 'AD TeamManager',
+    fecha_nacimiento: player.fecha_nacimiento || '2000-01-01',
+    talla: player.talla ? Math.round(player.talla * 100) : 175,
+    partidos_jugados: player.partidos_jugados || 0,
+    titularidades: player.titularidades || 0,
+    minutos_jugados: player.minutos_jugados || 0,
+    goles: player.goles || 0,
+    asistencias: player.asistencias || 0,
+    tarjetas_amarillas: player.tarjetas_amarillas || 0,
+    tarjetas_rojas: player.tarjetas_rojas || 0,
+    ...(userId ? { user_id: userId } : {})
+  }));
+
+  console.log('Enviando a Supabase...', cleanData.length, 'jugadores');
+  const { error, data } = await supabase.from('jugadores').insert(cleanData).select();
   
   if (error) {
-    console.error('Error in bulk import:', error);
-    throw error;
+    console.error('Error detallado de Supabase:', error.message, error.details, error.hint);
+    // Lanzamos un error que contenga el mensaje de Postgres si es posible
+    throw new Error(error.message || 'Error en la base de datos de Supabase');
   }
+  
+  console.log('¡Importación completada! Registros creados:', data?.length);
+  return data;
 }

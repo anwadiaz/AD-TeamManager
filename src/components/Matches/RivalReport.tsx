@@ -3,79 +3,55 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Youtube, Shield, Sword, RefreshCw, Save, Loader2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
-export default function RivalReport() {
-  const [report, setReport] = useState<{
-    id?: string;
+interface RivalReportProps {
+  matchId: string;
+  initialData?: {
     offensive: string;
     defensive: string;
     transitions: string;
     youtube_url: string;
-  }>({
-    offensive: '',
-    defensive: '',
-    transitions: '',
-    youtube_url: ''
+  };
+}
+
+export default function RivalReport({ matchId, initialData }: RivalReportProps) {
+  const [report, setReport] = useState({
+    offensive: initialData?.offensive || '',
+    defensive: initialData?.defensive || '',
+    transitions: initialData?.transitions || '',
+    youtube_url: initialData?.youtube_url || ''
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Load initial data if exists
   useEffect(() => {
-    const loadReport = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('match_reports')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
-        
-        if (data && !error) {
-          setReport(data);
-        }
-      } catch (error) {
-        console.warn('Could not load report:', error);
-      }
-    };
-    loadReport();
-  }, []);
+    if (initialData) {
+      setReport({
+        offensive: initialData.offensive || '',
+        defensive: initialData.defensive || '',
+        transitions: initialData.transitions || '',
+        youtube_url: initialData.youtube_url || ''
+      });
+    }
+  }, [matchId, initialData]);
 
   const handleSave = async () => {
     setSaving(true);
     setSaved(false);
     try {
-      const reportToSave = {
-        offensive: report.offensive,
-        defensive: report.defensive,
-        transitions: report.transitions,
-        youtube_url: report.youtube_url,
-        updated_at: new Date().toISOString()
-      };
+      const { error } = await supabase
+        .from('partidos')
+        .update({ 
+          informe_rival: report 
+        })
+        .eq('id', matchId);
 
-      let result;
-      if (report.id) {
-        result = await supabase
-          .from('match_reports')
-          .update(reportToSave)
-          .eq('id', report.id)
-          .select()
-          .single();
-      } else {
-        result = await supabase
-          .from('match_reports')
-          .insert([reportToSave])
-          .select()
-          .single();
-      }
-
-      if (result.error) throw result.error;
-      if (result.data) setReport(result.data);
+      if (error) throw error;
       
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
       console.error('Error saving report:', error);
-      alert('Error al guardar: Ejecuta el script SQL en Supabase para crear la tabla "match_reports".');
+      alert('Error al guardar el informe.');
     } finally {
       setSaving(false);
     }
