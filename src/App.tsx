@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { supabase } from './lib/supabase';
+import { supabase, isConfigured } from './lib/supabase';
 import Auth from './components/Auth';
+import ConfigError from './components/ConfigError';
 import PlayerList from './components/PlayerList';
 import PlayerForm from './components/PlayerForm';
 import PlayerDetail from './components/PlayerDetail';
@@ -37,6 +38,11 @@ export default function App() {
   const [filterTalla, setFilterTalla] = useState<string>('Todas');
 
   useEffect(() => {
+    if (!isConfigured) {
+      setLoading(false);
+      return;
+    }
+
     const initSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -158,6 +164,10 @@ export default function App() {
     m.equipo_local.toLowerCase().includes(searchTerm.toLowerCase()) || 
     m.equipo_visitante.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (!isConfigured) {
+    return <ConfigError />;
+  }
 
   if (!session) {
     return <Auth />;
