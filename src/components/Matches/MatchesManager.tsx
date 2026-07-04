@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Users, FileText, Layout, Activity, Shield, Trophy, Plus } from 'lucide-react';
+import { Users, FileText, Layout, Activity, Shield, Trophy, Plus, ClipboardList } from 'lucide-react';
 import TeamList, { TeamListHandle } from './TeamList';
 import RivalReport from './RivalReport';
 import MatchPlan from './MatchPlan';
 import LiveEvents from './LiveEvents';
+import MatchCreate from './MatchCreate';
+import LineupEditor from './LineupEditor';
 
-type TabType = 'equipos' | 'rival' | 'plan' | 'eventos';
+type TabType = 'equipos' | 'alta-partido' | 'alineacion' | 'rival' | 'plan' | 'eventos';
 
 export default function MatchesManager() {
   const [activeTab, setActiveTab] = useState<TabType>('equipos');
@@ -14,6 +16,8 @@ export default function MatchesManager() {
 
   const tabs = [
     { id: 'equipos', label: 'Equipos', icon: Users },
+    { id: 'alta-partido', label: 'Alta Partido', icon: Plus },
+    { id: 'alineacion', label: 'Alineación', icon: ClipboardList },
     { id: 'rival', label: 'Informe Rival', icon: FileText },
     { id: 'plan', label: 'Plan Partido', icon: Layout },
     { id: 'eventos', label: 'Eventos', icon: Activity },
@@ -63,6 +67,8 @@ export default function MatchesManager() {
             className="h-full"
           >
             {activeTab === 'equipos' && <TeamList ref={teamListRef} />}
+            {activeTab === 'alta-partido' && <MatchCreate />}
+            {activeTab === 'alineacion' && <LineupEditor />}
             {activeTab === 'rival' && <RivalReport />}
             {activeTab === 'plan' && <MatchPlan />}
             {activeTab === 'eventos' && <LiveEvents />}

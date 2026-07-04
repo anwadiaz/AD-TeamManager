@@ -11,7 +11,8 @@ import MatchList from './components/MatchList';
 import MatchForm from './components/MatchForm';
 import MatchesManager from './components/Matches/MatchesManager';
 import MyTeamProfile from './components/MyTeam/MyTeamProfile';
-import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star, Upload, Activity, Shield } from 'lucide-react';
+import ProfileView from './components/ProfileView';
+import { Plus, Users, Loader2, Search, Filter, Trophy, Bell, Settings, LayoutGrid, List, Star, Upload, Activity, Shield, Users2 } from 'lucide-react';
 import type { Player, Match, Evaluation } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserMenu } from './components/UserMenu';
@@ -38,6 +39,27 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPos, setFilterPos] = useState<string>('Todas');
   const [filterTalla, setFilterTalla] = useState<string>('Todas');
+  const [teamLogo, setTeamLogo] = useState<string | null>(null);
+  const [teamName, setTeamName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTeamProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('team_profiles')
+          .select('logo_url, team_name')
+          .limit(1)
+          .single();
+        if (data && !error) {
+          setTeamLogo(data.logo_url);
+          setTeamName(data.team_name);
+        }
+      } catch (e) {
+        console.warn('Could not fetch team profile');
+      }
+    };
+    if (session) fetchTeamProfile();
+  }, [session, viewMode]); // Refresh if we come back from editing it
 
   useEffect(() => {
     if (!isConfigured) {
@@ -252,9 +274,12 @@ export default function App() {
         {/* Header Bento Item */}
         <header className="bento-card bg-brand-slate-900/50 px-6 sm:px-8 py-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
+            {teamLogo && (
+              <img src={teamLogo} alt="Logo" className="w-10 h-10 object-contain" />
+            )}
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white uppercase flex items-center gap-2">
               {viewMode === 'players' ? 'Plantilla' : viewMode === 'results' ? 'Resultados' : viewMode === 'analysis' ? 'Partidos' : viewMode === 'notifications' ? 'Notificaciones' : viewMode === 'my-team' ? 'Mi Equipo' : 'Evaluaciones'}
-              <span className="text-red-500">{APP_CONFIG.name.split(' ').pop()}</span>
+              <span className="text-red-500">{teamName || APP_CONFIG.name}</span>
             </h1>
           </div>
 
@@ -272,11 +297,11 @@ export default function App() {
             
             {(viewMode === 'players' || viewMode === 'results') && (
               <div className="flex items-center gap-2">
-                {viewMode === 'players' && players.length === 0 && (
+                {viewMode === 'players' && (
                   <button 
                     onClick={async () => {
                       const { bulkImportPlayers } = await import('./lib/bulkImport');
-                      if (confirm('¿Quieres importar toda la plantilla del At. Central B 24/25 con sus estadísticas?')) {
+                      if (confirm('¿Quieres importar los jugadores solicitados con sus estadísticas?')) {
                         try {
                           await bulkImportPlayers();
                           fetchPlayers();
@@ -288,7 +313,7 @@ export default function App() {
                     className="flex bg-brand-slate-800 hover:bg-brand-slate-700 text-red-500 font-bold px-3 py-1.5 rounded-full text-[10px] md:text-xs transition-all active:scale-95 items-center gap-2 border border-brand-slate-700"
                   >
                     <Upload size={14} />
-                    Importar 24/25
+                    Importar Plantilla
                   </button>
                 )}
                 <button
@@ -506,33 +531,6 @@ export default function App() {
           {viewMode === 'evaluations' && <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-500 rounded-full" />}
         </button>
       </nav>
-    </div>
-  );
-}
-
-function ProfileView({ session }: { session: any }) {
-  return (
-    <div className="bg-brand-slate-950 p-6 rounded-2xl border border-brand-slate-800">
-      <div className="flex items-center gap-6 mb-8">
-        <div className="w-20 h-20 bg-brand-slate-800 rounded-full flex items-center justify-center text-2xl font-bold text-red-500 border-2 border-brand-slate-700">
-          {session?.user?.email?.substring(0, 2).toUpperCase()}
-        </div>
-        <div>
-          <h3 className="text-xl font-bold text-white leading-none mb-2">{session?.user?.email?.split('@')[0]}</h3>
-          <p className="text-slate-500 text-sm">{session?.user?.email}</p>
-        </div>
-      </div>
-      
-      <div className="space-y-4">
-        <div className="p-4 bg-brand-slate-900 rounded-xl border border-brand-slate-800">
-          <p className="text-[10px] text-slate-500 uppercase font-black mb-1">Rol de Usuario</p>
-          <p className="text-white font-bold">Administrador del Equipo</p>
-        </div>
-        <div className="p-4 bg-brand-slate-900 rounded-xl border border-brand-slate-800">
-          <p className="text-[10px] text-slate-500 uppercase font-black mb-1">ID de Sesión</p>
-          <p className="text-slate-500 font-mono text-xs truncate">{session?.user?.id}</p>
-        </div>
-      </div>
     </div>
   );
 }
